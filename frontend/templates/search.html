@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Search Games - GAMERCE{% endblock %}
+
+{% block content %}
+<main class="p-4">
+    <div class="flex items-center mb-4">
+        <input class="w-full p-2 bg-gray-800 rounded-md" placeholder="Search" type="text" />
+    </div>
+    <div class="flex">
+        <!-- Games List -->
+        <div class="grid grid-cols-4 gap-4 w-3/4">
+            {% for game in get_high_score_games_list %}
+            <div class="text-center game-item" data-game-id="{{ game['name'] }}">
+                <img alt="{{ game['name'] }} game cover" class="w-full h-auto" src="{{ game['image'] }}" />
+                <p>{{ game['name'] }}</p>
+                <p>${{ game['price'] }}</p>
+            </div>
+            {% else %}
+            <p>No games available.</p>
+            {% endfor %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="w-1/4 pl-4">
+            <div class="mb-4">
+                <p class="font-bold">Sort by</p>
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-sort-amount-up-alt"></i>
+                    <button class="bg-purple-500 text-white px-2 py-1 rounded-md">
+                        <a href="/search?sort=releaseDate" class="text-white">Release date</a>
+                    </button>
+                    <button class="text-white">Price</button>
+                    <button class="text-white">Reviews</button>
+                </div>
+            </div>
+
+            <!-- Price Range -->
+            <div class="mb-4">
+                <p class="font-bold">Price</p>
+                <input class="w-full" max="77" min="10" type="range" />
+                <p>$10 - $77</p>
+            </div>
+
+            <!-- Genre List -->
+            <div>
+                <p class="font-bold">Genre</p>
+                <ul class="space-y-2">
+                    {% for genre in genres %}
+                    <li>{{ genre }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    document.querySelectorAll('.game-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const gameName = this.dataset.gameId; // Get the game name
+            window.location.href = `/game/${gameName}`; // Redirect to the game page
+        });
+    });
+</script>
+{% endblock %}
