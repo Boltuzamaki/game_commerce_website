@@ -44,13 +44,19 @@
 
             <!-- Genre List -->
             <div>
-                <p class="font-bold">Genre</p>
+                <p class="font-bold">Select Genres</p>
                 <ul class="space-y-2">
                     {% for genre in genres %}
-                    <li>{{ genre }}</li>
+                    <li>
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="genres" value="{{ genre }}" class="form-checkbox h-5 w-5 text-purple-600">
+                            <span class="ml-2">{{ genre }}</span>
+                        </label>
+                    </li>
                     {% endfor %}
                 </ul>
             </div>
+            
         </div>
     </div>
 </main>

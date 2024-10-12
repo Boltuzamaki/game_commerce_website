@@ -1,0 +1,15 @@
+GENRES = [
+    "Action",
+    "Adventure",
+    "Casual",
+    "Early Access",
+    "Education",
+    "Free To Play",
+    "Gore",
+    "Indie",
+    "Massively Multiplayer",
+    "RPG",
+    "Racing",
+    "Sports",
+    "Strategy",
+]

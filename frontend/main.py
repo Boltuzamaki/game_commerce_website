@@ -1,116 +1,36 @@
-import os
-import sqlite3
-
 from flask import Flask, render_template, request
+
+from src.game_page.utils import get_game_data
+from src.index.utils import (
+    get_games,
+    get_top_games_by_genre,
+    get_top_games_from_last_month,
+)
+from src.search.constants import GENRES
+from src.search.utils import get_high_score_games, search_games
 
 app = Flask(__name__)
 
 
-# Function to get data from the database
-def get_games(limit=6):
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.join(base_dir, "database", "games.db")
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
+@app.route("/")
+def home():
+    # Fetch games data from the database
+    games = get_games()
+    top_action_games = get_top_games_by_genre("Action")
+    top_open_world_games = get_top_games_by_genre("RPG")
+    get_top_games_from_lm = get_top_games_from_last_month()
 
-    # Query to fetch some games data (adjust the columns as necessary)
-    cursor.execute(
-        """
-        SELECT name, price, headerImage, totalDownloads, positive
-        FROM games
-        LIMIT ?
-        """,
-        (limit,),
+    all_games = {
+        "games": games,
+        "top_action_games": top_action_games,
+        "top_open_world_games": top_open_world_games,
+        "get_top_games_from_last_month": get_top_games_from_lm,
+    }
+    # Render the template with game data
+    return render_template(
+        "index.html",
+        all_games=all_games,
     )
-
-    games = cursor.fetchall()
-    conn.close()
-
-    # Prepare game data for the template
-    games_list = []
-    for game in games:
-        game_data = {
-            "name": game[0],
-            "price": game[1],
-            "image": game[2],  # URL of the game cover
-            "downloads": game[3],
-            "positive": game[4],
-        }
-        games_list.append(game_data)
-
-    return games_list
-
-
-# Function to search games based on the query
-def search_games(query):
-
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.join(base_dir, "database", "games.db")
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-
-    # SQL query to search for games by name, genres, or tags
-    cursor.execute(
-        """
-        SELECT name, price, headerImage, totalDownloads, positive
-        FROM games
-        WHERE name LIKE ? OR genres LIKE ? OR tags LIKE ?
-        """,
-        (f"%{query}%", f"%{query}%", f"%{query}%"),
-    )
-
-    search_results = cursor.fetchall()
-    conn.close()
-
-    # Prepare search results for the template
-    search_list = []
-    for result in search_results:
-        game_data = {
-            "name": result[0],
-            "price": result[1],
-            "image": result[2],  # URL of the game cover
-            "downloads": result[3],
-            "positive": result[4],
-        }
-        search_list.append(game_data)
-
-    return search_list
-
-
-# Function to get 12 random games with scoreRank more than 8
-def get_high_score_games():
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.join(base_dir, "database", "games.db")
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-
-    # SQL query to fetch 12 random games with scoreRank > 8
-    cursor.execute(
-        """
-        SELECT name, price, headerImage, totalDownloads, positive
-        FROM games
-        WHERE CAST(scoreRank AS INTEGER) > 8
-        ORDER BY RANDOM()
-        LIMIT 12
-        """
-    )
-
-    high_score_games = cursor.fetchall()
-    conn.close()
-
-    # Prepare the list of high-score games
-    game_list = []
-    for game in high_score_games:
-        game_data = {
-            "name": game[0],
-            "price": game[1],
-            "image": game[2],  # URL of the game cover
-            "downloads": game[3],
-            "positive": game[4],
-        }
-        game_list.append(game_data)
-
-    return game_list
 
 
 @app.route("/search")
@@ -120,120 +40,15 @@ def search():
         search_results = search_games(query)
     else:
         search_results = []
-    genres = [
-        "360 Video",
-        "Accounting",
-        "Action",
-        "Adventure",
-        "Animation & Modeling",
-        "Audio Production",
-        "Casual",
-        "Design & Illustration",
-        "Documentary",
-        "Early Access",
-        "Education",
-        "Episodic",
-        "Free To Play",
-        "Free to Play",
-        "Game Development",
-        "Gore",
-        "Indie",
-        "Massively Multiplayer",
-        "Movie",
-        "Nudity",
-        "Photo Editing",
-        "RPG",
-        "Racing",
-        "Sexual Content",
-        "Short",
-        "Simulation",
-        "Software Training",
-        "Sports",
-        "Strategy",
-        "Tutorial",
-        "Utilities",
-        "Video Production",
-        "Violent",
-        "Web Publishing",
-    ]
 
     get_high_score_games_list = get_high_score_games()
     print(get_high_score_games_list)
     return render_template(
         "search.html",
         search_results=search_results,
-        genres=genres,
+        genres=GENRES,
         get_high_score_games_list=get_high_score_games_list,
     )
-
-
-def get_games_by_release_date():
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.join(base_dir, "database", "games.db")
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-
-    # SQL query to fetch games sorted by release date in descending order
-    query = "SELECT name, price, headerImage, releaseDate, totalDownloads, positive FROM games ORDER BY releaseDate DESC"
-    cursor.execute(query)
-    games = cursor.fetchall()
-    conn.close()
-
-    # Prepare games data for the template
-    games_list = []
-    for game in games:
-        game_data = {
-            "name": game[0],
-            "price": game[1],
-            "image": game[2],  # URL of the game cover
-            "releaseDate": game[3],
-            "downloads": game[4],
-            "positive": game[5],
-        }
-        games_list.append(game_data)
-
-    return games_list
-
-
-def get_game_data(game_name):
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.join(base_dir, "database", "games.db")
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM games WHERE name=?", (game_name,))
-    game = cursor.fetchone()
-    conn.close()
-
-    if game:
-        # Map the fetched data to appropriate fields
-        game_data = {
-            "appID": game[0],
-            "name": game[1],
-            "releaseDate": game[2],
-            "price": game[6],
-            "longDesc": game[9],
-            "shortDesc": game[10],
-            "about_the_game": game[11],
-            "reviews": game[12],
-            "headerImage": game[13],
-            "supportWindows": game[16],
-            "supportMac": game[17],
-            "supportLinux": game[18],
-            "totalDownloads": game[39],
-            # Add other fields as necessary
-        }
-        return game_data
-    else:
-        return None
-
-
-@app.route("/")
-def home():
-    # Fetch games data from the database
-    games = get_games()
-
-    # Render the template with game data
-    return render_template("index.html", games=games)
 
 
 @app.route("/signin")

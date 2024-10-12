@@ -5,33 +5,58 @@
 {% block content %}
 <main>
     <!-- Best Selling Game Section -->
-    <section class="relative">
-        <img src="https://placehold.co/1200x600" alt="A person standing in a post-apocalyptic city" class="w-full h-96 object-cover">
-        <div class="absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex flex-col justify-center p-8">
-            <h2 class="text-purple-500 text-xl font-bold">Best Selling Game</h2>
-            <h1 class="text-4xl font-bold">SURVIVE IN CHORNOBYL</h1>
-            <p class="mt-4 text-lg">
-                Navigate treacherous landscapes, scavenge for scarce resources, and encounter mutated creatures. Experience a dynamic survival game blending history with the supernatural.
-            </p>
-            <div class="mt-4 flex items-center">
-                <span class="text-yellow-500 text-lg font-bold">5M downloads</span>
-                <div class="ml-4 flex items-center">
-                    <i class="fas fa-star text-yellow-500"></i>
-                    <i class="fas fa-star text-yellow-500"></i>
-                    <i class="fas fa-star text-yellow-500"></i>
-                    <i class="fas fa-star text-yellow-500"></i>
-                    <i class="fas fa-star-half-alt text-yellow-500"></i>
-                </div>
-            </div>
+    <section class="relative w-full h-96 overflow-hidden">
+        <div id="carousel" class="flex transition-transform duration-700 ease-in-out">
+            <!-- Carousel items will be inserted dynamically here -->
         </div>
+        <button id="prev" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-purple-500 text-white px-4 py-2 rounded-l">
+            Prev
+        </button>
+        <button id="next" class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-purple-500 text-white px-4 py-2 rounded-r">
+            Next
+        </button>
     </section>
 
-    <!-- Recommended for You Section -->
+    <!-- Recommended for you Section -->
     <section class="p-8">
         <h2 class="text-2xl font-bold mb-4">Recommended for you</h2>
         <div class="grid grid-cols-6 gap-4">
-            {% for game in games %}
-            <div class="text-center">
+            {% for game in all_games['games'] %}
+            <div class="text-center game-item" data-game-id="{{ game['name'] }}">
+                <img src="{{ game.image }}" alt="{{ game.name }} cover" class="w-full h-48 object-cover">
+                <div class="mt-2">{{ game.name }}</div>
+                <div class="text-gray-400">${{ game.price }}</div>
+                <div class="text-gray-400">Match {{ game.match_percentage }}%</div>
+            </div>
+            {% else %}
+            <p>No games available.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Action Section -->
+    <section class="p-8">
+        <h2 class="text-2xl font-bold mb-4">Action</h2>
+        <div class="grid grid-cols-6 gap-4">
+            {% for game in all_games['top_action_games'] %}
+            <div class="text-center game-item" data-game-id="{{ game['name'] }}">
+                <img src="{{ game.image }}" alt="{{ game.name }} cover" class="w-full h-48 object-cover">
+                <div class="mt-2">{{ game.name }}</div>
+                <div class="text-gray-400">${{ game.price }}</div>
+                <div class="text-gray-400">Match {{ game.match_percentage }}%</div>
+            </div>
+            {% else %}
+            <p>No games available.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Open World Section -->
+    <section class="p-8">
+        <h2 class="text-2xl font-bold mb-4">Open World</h2>
+        <div class="grid grid-cols-6 gap-4">
+            {% for game in all_games['top_open_world_games'] %}
+            <div class="text-center game-item" data-game-id="{{ game['name'] }}">
                 <img src="{{ game.image }}" alt="{{ game.name }} cover" class="w-full h-48 object-cover">
                 <div class="mt-2">{{ game.name }}</div>
                 <div class="text-gray-400">${{ game.price }}</div>
@@ -43,4 +68,68 @@
         </div>
     </section>
 </main>
+<script>
+    // Example data from the backend (replace with your dynamic data)
+    const games = {{ all_games['get_top_games_from_last_month'] | tojson }};
+
+    // Reference to the carousel container
+    const carousel = document.getElementById('carousel');
+
+    // Generate carousel items dynamically
+    games.forEach(game => {
+        const item = document.createElement('div');
+        item.classList.add('w-full', 'h-96', 'relative', 'flex-shrink-0');
+
+        item.innerHTML = `
+            <img src="${game.image}" alt="${game.name}" class="w-full h-96 object-cover">
+            <div class="absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex flex-col justify-center p-8">
+                <h2 class="text-purple-500 text-xl font-bold">Best Selling Game</h2>
+                <h1 class="text-4xl font-bold">${game.name}</h1>
+                <p class="mt-4 text-lg">
+                    Released on ${game.releaseDate}. Price: $${game.price}
+                </p>
+                <div class="mt-4 flex items-center">
+                    <span class="text-yellow-500 text-lg font-bold">${game.metacriticScore}</span>
+                    <div class="ml-4 flex items-center">
+                        <i class="fas fa-star text-yellow-500"></i>
+                        <i class="fas fa-star text-yellow-500"></i>
+                        <i class="fas fa-star text-yellow-500"></i>
+                        <i class="fas fa-star text-yellow-500"></i>
+                        <i class="fas fa-star-half-alt text-yellow-500"></i>
+                    </div>
+                </div>
+            </div>
+        `;
+        carousel.appendChild(item);
+    });
+
+    // Carousel functionality
+    let index = 0;
+    const totalGames = games.length;
+    const updateCarousel = () => {
+        const width = carousel.clientWidth;
+        carousel.style.transform = `translateX(-${index * width}px)`;
+    };
+
+    document.getElementById('next').addEventListener('click', () => {
+        index = (index + 1) % totalGames;
+        updateCarousel();
+    });
+
+    document.getElementById('prev').addEventListener('click', () => {
+        index = (index - 1 + totalGames) % totalGames;
+        updateCarousel();
+    });
+
+    // Initialize the carousel
+    updateCarousel();
+
+    
+    document.querySelectorAll('.game-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const gameName = this.dataset.gameId; // Get the game name
+            window.location.href = `/game/${gameName}`; // Redirect to the game page
+        });
+    });
+</script>
 {% endblock %}

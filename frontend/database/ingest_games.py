@@ -6,6 +6,29 @@ from tqdm import tqdm  # Progress bar
 
 # Path to the games.json file
 json_file_path = "games.json"
+GENRES = [
+    "360 Video",
+    "Accounting",
+    "Animation & Modeling",
+    "Audio Production",
+    "Design & Illustration",
+    "Documentary",
+    "Education",
+    "Episodic",
+    "Game Development",
+    "Massively Multiplayer",
+    "Movie",
+    "Nudity",
+    "Photo Editing",
+    "Sexual Content",
+    "Short",
+    "Simulation",
+    "Software Training",
+    "Tutorial",
+    "Utilities",
+    "Video Production",
+    "Web Publishing",
+]
 
 # Connect to SQLite database (or create it if it doesn't exist)
 conn = sqlite3.connect("games.db")
@@ -128,7 +151,17 @@ if os.path.exists(json_file_path):
 
                 # Categories, Genres, Screenshots, Movies, Tags are lists, so we'll join them into a single string
                 categories = ", ".join(game.get("categories", []))
-                genres = ", ".join(game.get("genres", []))
+                genres = game.get("genres", [])
+                if any(genre in GENRES for genre in genres):
+                    print(
+                        f"Skipping game {game.get('name', 'Unknown')} due to restricted genre."
+                    )
+                    continue
+
+                genres_str = ", ".join(
+                    genres
+                )  # Join genres into a single string
+
                 screenshots = " | ".join(
                     game.get("screenshots", [])
                 )  # Joining with ' | ' instead of ', '
@@ -188,7 +221,7 @@ if os.path.exists(json_file_path):
                     averagePlaytime,
                     medianPlaytime,
                     categories,
-                    genres,
+                    genres_str,  # Inserting joined genres
                     screenshots,
                     movies,
                     tags,
