@@ -153,9 +153,6 @@ if os.path.exists(json_file_path):
                 categories = ", ".join(game.get("categories", []))
                 genres = game.get("genres", [])
                 if any(genre in GENRES for genre in genres):
-                    print(
-                        f"Skipping game {game.get('name', 'Unknown')} due to restricted genre."
-                    )
                     continue
 
                 genres_str = ", ".join(
@@ -228,10 +225,6 @@ if os.path.exists(json_file_path):
                     totalDownloads,
                 )
 
-                # Logging statement to print the number of values and the actual values
-                print(f"Number of values: {len(values)}")
-                print(f"Values: {values}")
-
                 # Insert the data into the database (41 columns with default values)
                 c.execute(
                     """
@@ -250,5 +243,3 @@ if os.path.exists(json_file_path):
 # Commit the transaction and close the connection
 conn.commit()
 conn.close()
-
-print("Data inserted successfully!")

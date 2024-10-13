@@ -75,7 +75,6 @@ def get_high_score_games():
 
 
 def filter_games(search_params):
-    print(search_params)
     base_dir = os.path.dirname(os.path.abspath(__file__))
     db_path = os.path.join(base_dir, "..", "..", "database", "games.db")
     conn = sqlite3.connect(db_path)

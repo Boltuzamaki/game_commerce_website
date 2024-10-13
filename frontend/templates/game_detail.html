@@ -26,7 +26,7 @@
                 <button class="bg-purple-600 text-white px-4 py-2 rounded" onclick="buyNow('{{ game['name'] }}')">
                     Buy now
                 </button>
-                <button class="bg-gray-700 text-white px-4 py-2 rounded" onclick="postRequest('/add_to_cart', '{{ game['name'] }}')" {% if added_to_cart %}disabled{% endif %}>
+                <button id="addToCartBtn" class="px-4 py-2 rounded hover:bg-black text-white {% if added_to_cart %}bg-green-600{% else %}bg-gray-700{% endif %}" onclick="postRequest('/game/{{ game['name'] }}', '{{ game['name'] }}')" {% if added_to_cart %}disabled{% endif %}>
                     {% if added_to_cart %}
                         Added to Cart
                     {% else %}
@@ -141,6 +141,10 @@
         .then(response => response.json())
         .then(data => {
             console.log('Success:', data);
+            // Update button text to "Added to Cart"
+            const addToCartBtn = document.getElementById('addToCartBtn');
+            addToCartBtn.textContent = 'Added to Cart';
+            addToCartBtn.disabled = true;
         })
         .catch((error) => {
             console.error('Error:', error);
@@ -164,7 +168,7 @@
     .catch(error => console.error('Error:', error));
   }
   // Function to send POST request with game name
-function postRequest(url, gameName) {
+  function postRequest(url, gameName) {
     fetch(url, {
         method: 'POST',
         headers: {
@@ -175,15 +179,23 @@ function postRequest(url, gameName) {
     .then(response => response.json())
     .then(data => {
         console.log('Success:', data);
-        // Dynamically update the cart count
+        
+        // Dynamically update the button text and disable it
+        const addToCartBtn = document.getElementById('addToCartBtn');
+        addToCartBtn.textContent = 'Added to Cart';
+        addToCartBtn.disabled = true;
+        addToCartBtn.style.backgroundColor = 'green';
+
+        // Dynamically update the cart count if you have a cart count element
         const cartCountElem = document.getElementById('cart-count');
-        let currentCount = parseInt(cartCountElem.textContent) || 0;
-        cartCountElem.textContent = currentCount + 1;
+        if (cartCountElem) {
+            let currentCount = parseInt(cartCountElem.textContent) || 0;
+            cartCountElem.textContent = currentCount + 1;
+        }
     })
     .catch((error) => {
         console.error('Error:', error);
     });
 }
-
 </script>
 {% endblock %}

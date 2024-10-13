@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: myapp-container
+    ports:
+      - "5000:5000" 
+    volumes:
+      - .:/app  
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+    command: python frontend/main.py

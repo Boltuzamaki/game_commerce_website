@@ -210,11 +210,12 @@ def signout():
     return redirect(url_for("home"))
 
 
-@app.route("/game/<game_name>")
+@app.route("/game/<game_name>", methods=["GET", "POST"])
 def game_page(game_name):
     game_data = get_game_data(game_name)
     added_to_cart = False
 
+    # Check if user is logged in and if the game is already in the cart
     if "user" in session:
         username = session["user"]
         user = get_user(username)
@@ -222,27 +223,38 @@ def game_page(game_name):
             cart_games_list = user[3].split(",")
             added_to_cart = game_name in cart_games_list
 
+    if request.method == "POST":
+        if "user" not in session:
+            return (
+                jsonify(
+                    {
+                        "success": False,
+                        "message": "Please sign in to add games to your cart.",
+                    }
+                ),
+                403,
+            )
+
+        # Update cart and set added_to_cart to True
+        update_cart(username, game_name)
+        added_to_cart = True
+
+        # Respond with JSON for AJAX requests
+        return jsonify(
+            {
+                "success": True,
+                "message": f"{game_name} added to cart.",
+                "added_to_cart": added_to_cart,
+            }
+        )
+
+    # Handle GET request to render the game detail page
     if game_data:
         return render_template(
             "game_detail.html", game=game_data, added_to_cart=added_to_cart
         )
     else:
         return "Game not found", 404
-
-
-@app.route("/add_to_cart", methods=["POST"])
-def add_to_cart():
-    if "user" not in session:
-        flash("Please sign in to add games to your cart.", "error")
-        return redirect(url_for("signin"))
-
-    data = request.get_json()
-    game_name = data.get("game_name")
-    username = session["user"]
-
-    update_cart(username, game_name)
-    flash(f"{game_name} added to cart.", "success")
-    return jsonify({"message": "Game added to cart"})
 
 
 @app.route("/buy_now", methods=["POST"])
@@ -305,4 +317,4 @@ def cart():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)

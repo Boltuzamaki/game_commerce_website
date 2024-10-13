@@ -29,7 +29,6 @@ def get_game_data(game_name):
             # Add other fields as necessary
         }
 
-        print(game_data)
         return game_data
     else:
         return None
