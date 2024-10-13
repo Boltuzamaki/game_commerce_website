@@ -5,7 +5,9 @@
 {% block content %}
 <main class="p-8">
     <div class="flex space-x-8">
-        <img alt="{{ game['name'] }} game cover" class="w-1/3" height="300" src="{{ game['headerImage'] }}" width="200"/>
+        <div class="w-1/3 overflow-hidden">
+            <img alt="{{ game['name'] }} game cover" class="object-cover object-center w-full h-full" src="{{ game['headerImage'] }}"/>
+        </div>
         <div class="flex-1">
             <h1 class="text-4xl font-bold">{{ game['name'] }}</h1>
             <p class="mt-4 text-gray-400">{{ game['longDesc'] }}</p>
@@ -21,7 +23,9 @@
             </div>
             <p class="mt-4 text-3xl font-bold">${{ game['price'] }}</p>
             <div class="flex space-x-4 mt-4">
-                <button class="bg-purple-600 text-white px-4 py-2 rounded" onclick="postRequest('/buy_now', '{{ game['name'] }}')">Buy now</button>
+                <button class="bg-purple-600 text-white px-4 py-2 rounded" onclick="buyNow('{{ game['name'] }}')">
+                    Buy now
+                </button>
                 <button class="bg-gray-700 text-white px-4 py-2 rounded" onclick="postRequest('/add_to_cart', '{{ game['name'] }}')" {% if added_to_cart %}disabled{% endif %}>
                     {% if added_to_cart %}
                         Added to Cart
@@ -141,5 +145,22 @@
             console.error('Error:', error);
         });
     }
+
+    function buyNow(gameName) {
+    fetch('/buy_now', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ game_name: gameName }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.redirect) {
+        window.location.href = data.redirect; 
+      }
+    })
+    .catch(error => console.error('Error:', error));
+  }
 </script>
 {% endblock %}
