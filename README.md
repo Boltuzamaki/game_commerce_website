@@ -22,27 +22,27 @@ The easiest way to run the application is with Docker Compose.
 
    Run the following command to build and start the app:
 
-   \`\`\`bash
+   ```bash
    docker-compose up --build
-   \`\`\`
+   ```
 
-   This will build the Docker image and start the application on port \`5000\`.
+   This will build the Docker image and start the application on port `5000`.
 
 2. **Access the Application:**
 
    Once the app is running, open your browser and navigate to:
 
-   \`\`\`
+   ```
    http://localhost:5000
-   \`\`\`
+   ```
 
 3. **Stopping the Application:**
 
-   To stop the application, press \`CTRL + C\` or run:
+   To stop the application, press `CTRL + C` or run:
 
-   \`\`\`bash
+   ```bash
    docker-compose down
-   \`\`\`
+   ```
 
 ### Option 2: Using Docker
 
@@ -52,115 +52,109 @@ You can also run the application directly using Docker without Compose.
 
    Run the following command to build the Docker image:
 
-   \`\`\`bash
+   ```bash
    docker build -t myapp .
-   \`\`\`
+   ```
 
 2. **Run the Docker Container:**
 
    After building the image, run the container with the following command:
 
-   \`\`\`bash
+   ```bash
    docker run -p 5000:5000 --name myapp-container myapp
-   \`\`\`
+   ```
 
 3. **Access the Application:**
 
    Open your browser and go to:
 
-   \`\`\`
+   ```html
    http://localhost:5000
-   \`\`\`
+   ```
 
 4. **Stopping the Container:**
 
-   To stop the container, press \`CTRL + C\` or run:
+   To stop the container, press `CTRL + C` or run:
 
-   \`\`\`bash
+   ```bash
    docker stop myapp-container
-   \`\`\`
+   ```
 
 ### Option 3: Running with Virtual Environment (venv)
 
 If you prefer not to use Docker, you can run the application in a Python virtual environment.
 
-1. **Clone the Repository:**
+1. **Extract the Repository:**
 
-   First, clone the repository (if you haven't already):
-
-   \`\`\`bash
-   git clone https://github.com/your-repo/myapp.git
-   cd myapp
-   \`\`\`
+   Extract the repo
 
 2. **Create and Activate a Virtual Environment:**
 
    Create a virtual environment with the following commands:
 
-   \`\`\`bash
+   ```bash
    python -m venv venv
    source venv/bin/activate   # On Linux/Mac
-   venv\Scripts\activate      # On Windows
-   \`\`\`
+   ```
 
 3. **Install Dependencies:**
 
-   Install the required dependencies from the \`requirements.txt\` file:
+   Install the required dependencies from the `requirements.txt` file:
 
-   \`\`\`bash
+   ```bash
    pip install -r requirements.txt
-   \`\`\`
+   ```
 
 4. **Export the PYTHONPATH:**
 
-   Since the \`frontend\` folder contains the main Python application, you need to set the \`PYTHONPATH\` to ensure Python can find the module.
+   Since the `frontend` folder contains the main Python application, you need to set the `PYTHONPATH` to ensure Python can find the module.
 
    On Linux/Mac:
 
-   \`\`\`bash
+   ```bash
    export PYTHONPATH=$PYTHONPATH:./frontend
-   \`\`\`
+   ```
 
    On Windows (PowerShell):
 
-   \`\`\`powershell
+   ```powershell
    $env:PYTHONPATH = "$env:PYTHONPATH;./frontend"
-   \`\`\`
+   ```
 
 5. **Run the Application:**
 
    Start the application by running the following command:
 
-   \`\`\`bash
-   python frontend/main.py
-   \`\`\`
+   ```bash
+   python run.py
+   ```
 
 6. **Access the Application:**
 
    Navigate to:
 
-   \`\`\`
+   ```
    http://localhost:5000
-   \`\`\`
+   ```
 
 7. **Deactivate the Virtual Environment:**
 
    When you're done, deactivate the virtual environment by running:
 
-   \`\`\`bash
+   ```bash
    deactivate
-   \`\`\`
+   ```
 
 ## Application Details
 
-- **Port**: The application runs on port \`5000\`.
-- **Dependencies**: The required dependencies are listed in \`requirements.txt\` and installed during the setup process.
-- **Main Application File**: The entry point of the application is \`frontend/main.py\`.
+- **Port**: The application runs on port `5000`.
+- **Dependencies**: The required dependencies are listed in `requirements.txt` and installed during the setup process.
+- **Main Application File**: The entry point of the application is `frontend/main.py`.
 
 ## Common Issues
 
-- **Port Already in Use**: If port \`5000\` is already in use, change the port in both the \`docker-compose.yml\` and \`frontend/main.py\`.
-- **PYTHONPATH Not Set**: If you encounter \`ModuleNotFoundError\`, ensure that the \`PYTHONPATH\` is properly set as shown above.
+- **Port Already in Use**: If port `5000` is already in use, change the port in both the `docker-compose.yml` and `frontend/main.py`.
+- **PYTHONPATH Not Set**: If you encounter `ModuleNotFoundError`, ensure that the `PYTHONPATH` is properly set as shown above.
 
 ## License
 

@@ -21,4 +21,4 @@ COPY . .
 EXPOSE 5000
 
 # Command to run the Python application
-CMD ["python", "frontend/main.py"]
+CMD ["python", "run.py"]

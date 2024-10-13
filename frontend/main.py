@@ -19,7 +19,7 @@ from src.index.utils import (
     get_top_games_from_last_month,
 )
 from src.search.constants import GENRES
-from src.search.utils import filter_games, get_high_score_games, search_games
+from src.search.utils import filter_games, get_high_score_games
 from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
@@ -49,7 +49,8 @@ def init_db():
     conn.close()
 
 
-init_db()
+with app.app_context():
+    init_db()
 
 
 @app.context_processor
