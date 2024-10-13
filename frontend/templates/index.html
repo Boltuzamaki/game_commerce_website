@@ -5,26 +5,30 @@
 {% block content %}
 <main>
     <!-- Best Selling Game Section -->
-    <section class="relative w-full h-96 overflow-hidden">
+    <section class="relative w-full h-[30rem] overflow-hidden">
         <div id="carousel" class="flex transition-transform duration-700 ease-in-out">
             <!-- Carousel items will be inserted dynamically here -->
         </div>
-        <button id="prev" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-purple-500 text-white px-4 py-2 rounded-l">
-            Prev
+        <button id="prev" class="absolute top-1/2 left-0 transform -translate-y-1/2 bg-gray-700 text-white p-2 rounded-full hover:bg-gray-800">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M12.707 15.293a1 1 0 010 1.414l-5-5a1 1 0 010-1.414l5-5a1 1 0 011.414 1.414L10.414 10l3.293 3.293a1 1 0 01-1.414 1.414z" clip-rule="evenodd" />
+            </svg>
         </button>
-        <button id="next" class="absolute right-0 top-1/2 transform -translate-y-1/2 bg-purple-500 text-white px-4 py-2 rounded-r">
-            Next
+        <button id="next" class="absolute top-1/2 right-0 transform -translate-y-1/2 bg-gray-700 text-white p-2 rounded-full hover:bg-gray-800">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M7.293 15.293a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
         </button>
     </section>
 
     <!-- Recommended for you Section -->
     <section class="p-8">
-        <h2 class="text-2xl font-bold mb-4">Recommended for you</h2>
+        <h2 class="text-2xl font-bold mb-4 px-8" >Recommended for you</h2>
         <div class="grid grid-cols-6 gap-4">
             {% for game in all_games['games'] %}
-            <div class="text-center game-item" data-game-id="{{ game['name'] }}">
-                <img src="{{ game.image }}" alt="{{ game.name }} cover" class="w-full h-48 object-cover">
-                <div class="mt-2">{{ game.name }}</div>
+            <div class="text-center game-item px-8 cursor-pointer" data-game-id="{{ game['name'] }}">
+                <img src="{{ game.image }}" alt="{{ game.name }} cover" class="w-full h-72 object-cover">
+                <div class="mt-4">{{ game.name }}</div>
                 <div class="text-gray-400">${{ game.price }}</div>
                 <div class="text-gray-400">Match {{ game.match_percentage }}%</div>
             </div>
@@ -33,17 +37,17 @@
             {% endfor %}
         </div>
     </section>
+    
 
     <!-- Action Section -->
     <section class="p-8">
-        <h2 class="text-2xl font-bold mb-4">Action</h2>
+        <h2 class="text-2xl font-bold mb-4 px-8">Action</h2>
         <div class="grid grid-cols-6 gap-4">
             {% for game in all_games['top_action_games'] %}
-            <div class="text-center game-item" data-game-id="{{ game['name'] }}">
-                <img src="{{ game.image }}" alt="{{ game.name }} cover" class="w-full h-48 object-cover">
+            <div class="text-center game-item px-8 cursor-pointer" data-game-id="{{ game['name'] }}">
+                <img src="{{ game.image }}" alt="{{ game.name }} cover" class="w-full h-72 object-cover">
                 <div class="mt-2">{{ game.name }}</div>
                 <div class="text-gray-400">${{ game.price }}</div>
-                <div class="text-gray-400">Match {{ game.match_percentage }}%</div>
             </div>
             {% else %}
             <p>No games available.</p>
@@ -53,14 +57,13 @@
 
     <!-- Open World Section -->
     <section class="p-8">
-        <h2 class="text-2xl font-bold mb-4">Open World</h2>
+        <h2 class="text-2xl font-bold mb-4 px-8">Open World</h2>
         <div class="grid grid-cols-6 gap-4">
             {% for game in all_games['top_open_world_games'] %}
-            <div class="text-center game-item" data-game-id="{{ game['name'] }}">
-                <img src="{{ game.image }}" alt="{{ game.name }} cover" class="w-full h-48 object-cover">
+            <div class="text-center game-item px-8 cursor-pointer" data-game-id="{{ game['name'] }}">
+                <img src="{{ game.image }}" alt="{{ game.name }} cover" class="w-full h-72 object-cover">
                 <div class="mt-2">{{ game.name }}</div>
                 <div class="text-gray-400">${{ game.price }}</div>
-                <div class="text-gray-400">Match {{ game.match_percentage }}%</div>
             </div>
             {% else %}
             <p>No games available.</p>
@@ -78,17 +81,22 @@
     // Generate carousel items dynamically
     games.forEach(game => {
         const item = document.createElement('div');
-        item.classList.add('w-full', 'h-96', 'relative', 'flex-shrink-0');
+        item.classList.add('w-full', 'h-[30rem]', 'relative', 'flex-shrink-0');
 
         item.innerHTML = `
-            <img src="${game.image}" alt="${game.name}" class="w-full h-96 object-cover">
-            <div class="absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex flex-col justify-center p-8">
+            <img src="${game.image}" alt="${game.name}" class="w-full h-[30rem] object-cover">
+            <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-black via-transparent to-transparent flex flex-col justify-center p-8">
                 <h2 class="text-purple-500 text-xl font-bold">Best Selling Game</h2>
                 <h1 class="text-4xl font-bold">${game.name}</h1>
-                <p class="mt-4 text-lg">
-                    Released on ${game.releaseDate}. Price: $${game.price}
+                <p class="mt-4 text-md max-w-2xl">
+                    ${game.shortDesc}
                 </p>
-                <div class="mt-4 flex items-center">
+                <div class="mt-4">
+                    <span class="text-white text-lg font-bold">
+                        ${game.totalDownloads >= 1000000 ? (game.totalDownloads / 1000000).toFixed(1) + 'M' : (game.totalDownloads / 1000).toFixed(1) + 'k'} Downloads
+                    </span>
+                </div>
+                <div class="mt-2 flex items-center">
                     <span class="text-yellow-500 text-lg font-bold">${game.metacriticScore}</span>
                     <div class="ml-4 flex items-center">
                         <i class="fas fa-star text-yellow-500"></i>
@@ -98,7 +106,6 @@
                         <i class="fas fa-star-half-alt text-yellow-500"></i>
                     </div>
                 </div>
-            </div>
         `;
         carousel.appendChild(item);
     });

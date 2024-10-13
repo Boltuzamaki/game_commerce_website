@@ -5,16 +5,16 @@
 {% block content %}
 <main class="p-4">
     <div class="flex items-center mb-4">
-        <input class="w-full p-2 bg-gray-800 rounded-md" placeholder="Search" type="text" />
+        <input id="search-input" class="w-full p-2 bg-gray-800 rounded-md" placeholder="Search" type="text" value="{{ query or '' }}" />
     </div>
     <div class="flex">
         <!-- Games List -->
-        <div class="grid grid-cols-4 gap-4 w-3/4">
+        <div id="game-list" class="grid grid-cols-4 gap-4 w-full">
             {% for game in get_high_score_games_list %}
-            <div class="text-center game-item" data-game-id="{{ game['name'] }}">
-                <img alt="{{ game['name'] }} game cover" class="w-full h-auto" src="{{ game['image'] }}" />
-                <p>{{ game['name'] }}</p>
-                <p>${{ game['price'] }}</p>
+            <div class="text-left game-item px-12 cursor-pointer hover:cursor-pointer" data-game-id="{{ game['name'] }}">
+                <img alt="{{ game['name'] }} game cover" class="w-full h-96 object-cover" src="{{ game['image'] }}" />
+                <div class="mt-2 font-bold">{{ game['name'] }}</div>
+                <div class="text-gray-400">${{ game['price'] }}</div>
             </div>
             {% else %}
             <p>No games available.</p>
@@ -27,19 +27,19 @@
                 <p class="font-bold">Sort by</p>
                 <div class="flex items-center space-x-2">
                     <i class="fas fa-sort-amount-up-alt"></i>
-                    <button class="bg-purple-500 text-white px-2 py-1 rounded-md">
-                        <a href="/search?sort=releaseDate" class="text-white">Release date</a>
+                    <button class="sort-button bg-gray-700 text-white px-2 py-1 rounded-md hover:bg-purple-500 {{ 'active bg-purple-500' if sort_by == 'releaseDate' else '' }}" data-sort="releaseDate">
+                        Release date
                     </button>
-                    <button class="text-white">Price</button>
-                    <button class="text-white">Reviews</button>
+                    <button class="sort-button bg-gray-700 text-white px-2 py-1 rounded-md hover:bg-purple-500 {{ 'active bg-purple-500' if sort_by == 'price' else '' }}" data-sort="price">Price</button>
+                    <button class="sort-button bg-gray-700 text-white px-2 py-1 rounded-md hover:bg-purple-500 {{ 'active bg-purple-500' if sort_by == 'reviews' else '' }}" data-sort="reviews">Reviews</button>
                 </div>
             </div>
 
             <!-- Price Range -->
             <div class="mb-4">
                 <p class="font-bold">Price</p>
-                <input class="w-full" max="77" min="10" type="range" />
-                <p>$10 - $77</p>
+                <input id="price-range" class="w-full" max="77" min="10" type="range" value="{{ price_range or 77 }}" />
+                <p>$10 - ${{ price_range or 77 }}</p>
             </div>
 
             <!-- Genre List -->
@@ -49,24 +49,101 @@
                     {% for genre in genres %}
                     <li>
                         <label class="inline-flex items-center">
-                            <input type="checkbox" name="genres" value="{{ genre }}" class="form-checkbox h-5 w-5 text-purple-600">
+                            <input type="checkbox" name="genres" value="{{ genre }}" class="form-checkbox h-5 w-5 text-purple-600"
+                                {% if genre in selected_genres %}checked{% endif %}>
                             <span class="ml-2">{{ genre }}</span>
                         </label>
                     </li>
                     {% endfor %}
                 </ul>
             </div>
-            
+
+            <!-- Apply Filter Button -->
+            <div class="mt-4">
+                <button id="apply-filters" class="bg-purple-500 text-white px-4 py-2 rounded-md w-full">
+                    Apply Filters
+                </button>
+            </div>
         </div>
     </div>
 </main>
 
 <script>
+    // Handle clicking on game items
     document.querySelectorAll('.game-item').forEach(item => {
         item.addEventListener('click', function() {
             const gameName = this.dataset.gameId; // Get the game name
             window.location.href = `/game/${gameName}`; // Redirect to the game page
         });
+    });
+
+    // Handle sorting buttons and retain active state
+    document.querySelectorAll('.sort-button').forEach(button => {
+        button.addEventListener('click', function() {
+            document.querySelectorAll('.sort-button').forEach(btn => btn.classList.remove('active', 'bg-purple-500'));  // Remove active class and background color from all buttons
+            this.classList.add('active', 'bg-purple-500');  // Add active class and background color to the clicked button
+
+            const sortBy = this.dataset.sort;  // Get the sorting value
+            applyFiltersAndSorting(sortBy);  // Call the function to apply filters and sorting
+        });
+    });
+
+    // Handle Apply Filters button click
+    document.getElementById('apply-filters').addEventListener('click', function() {
+        applyFiltersAndSorting();
+    });
+
+    function applyFiltersAndSorting(sortBy = null) {
+        const selectedGenres = Array.from(document.querySelectorAll('input[name="genres"]:checked')).map(checkbox => checkbox.value);
+        const priceRange = document.querySelector('input[type="range"]').value;
+        const query = document.getElementById('search-input').value;
+        const activeSortBy = sortBy || document.querySelector('.sort-button.active')?.dataset.sort || null;
+
+        fetch('/search', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                genres: selectedGenres,
+                price: priceRange,
+                sort: activeSortBy,  // Send sorting value
+                q: query  // Send search query
+            })
+        }).then(response => response.json())
+        .then(data => {
+            // Dynamically update the game list without reloading the page
+            const gameListContainer = document.getElementById('game-list');
+            gameListContainer.innerHTML = ''; // Clear existing game list
+            
+            if (data.length > 0) {
+                data.forEach(game => {
+                    const gameItem = `
+                    <div class="text-left game-item px-12 cursor-pointer hover:cursor-pointer" data-game-id="${game.name}">
+                        <img alt="${game.name} game cover" class="w-full h-96 object-cover" src="${game.image}" />
+                        <div class="mt-2 font-bold">${game.name}</div>
+                        <div class="text-gray-400">$${game.price}</div>
+                    </div>`;
+                    gameListContainer.insertAdjacentHTML('beforeend', gameItem);
+                });
+            } else {
+                gameListContainer.innerHTML = '<p>No games available.</p>';
+            }
+        })
+        .catch(error => {
+            console.error('Failed to apply filters and sorting', error);
+        });
+    }
+
+    // Maintain the active sort button after page reload
+    window.addEventListener('DOMContentLoaded', (event) => {
+        const sortBy = "{{ sort_by }}";  // Pass the 'sort_by' value from the backend
+        if (sortBy) {
+            const activeButton = document.querySelector(`.sort-button[data-sort="${sortBy}"]`);
+            if (activeButton) {
+                activeButton.classList.add('active', 'bg-purple-500');  // Set the active class and background color on the correct button
+            }
+        }
     });
 </script>
 {% endblock %}

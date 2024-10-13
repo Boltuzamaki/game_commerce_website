@@ -16,7 +16,7 @@ def get_top_games_from_last_month(limit=5):
     # Query to fetch the top 5 games by userScore from the last month
     cursor.execute(
         """
-        SELECT appID, name, releaseDate, price, headerImage, metacriticScore
+        SELECT appID, name, releaseDate, totalDownloads, headerImage, metacriticScore, shortDesc
         FROM games
         WHERE releaseDate >= ?
         ORDER BY metacriticScore DESC
@@ -35,9 +35,10 @@ def get_top_games_from_last_month(limit=5):
             "appID": game[0],
             "name": game[1],
             "releaseDate": game[2],
-            "price": game[3],
+            "totalDownloads": game[3],
             "image": game[4],  # URL of the game cover
             "metacriticScore": game[5],
+            "shortDesc": game[6],
         }
         games_list.append(game_data)
 
@@ -50,7 +51,6 @@ def get_top_games_by_genre(genre, limit=6):
     db_path = os.path.join(base_dir, "..", "..", "database", "games.db")
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-
     # Query to fetch the top 6 games from a given genre, ordering by userScore
     cursor.execute(
         """

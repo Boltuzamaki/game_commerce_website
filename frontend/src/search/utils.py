@@ -72,3 +72,96 @@ def get_high_score_games():
         game_list.append(game_data)
 
     return game_list
+
+
+def filter_games(search_params):
+    print(search_params)
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(base_dir, "..", "..", "database", "games.db")
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    # Base SQL query
+    query = """
+        SELECT appID, name, price, headerImage, totalDownloads, positive, genres, metacriticScore, releaseDate
+        FROM games
+        WHERE 1=1
+    """
+
+    # List to store the query conditions and corresponding parameters
+    conditions = []
+    params = []
+
+    # Add filters based on the search parameters
+    if search_params.get("name"):
+        conditions.append("name LIKE ?")
+        params.append(f"%{search_params['name']}%")
+
+    if search_params.get("genres"):
+        genre_conditions = []
+        for genre in search_params["genres"]:
+            genre_conditions.append("genres LIKE ?")
+            params.append(f"%{genre}%")
+        # Combine the genre conditions using OR
+        if genre_conditions:
+            conditions.append(f"({' OR '.join(genre_conditions)})")
+
+    if search_params.get("min_price") is not None:
+        conditions.append("price >= ?")
+        params.append(search_params["min_price"])
+
+    if search_params.get("max_price") is not None:
+        conditions.append("price <= ?")
+        params.append(search_params["max_price"])
+
+    if search_params.get("metacriticScore"):
+        conditions.append("metacriticScore >= ?")
+        params.append(search_params["metacriticScore"])
+
+    if search_params.get("releaseDate"):
+        conditions.append("releaseDate = ?")
+        params.append(search_params["releaseDate"])
+
+    if search_params.get("tags"):
+        conditions.append("tags LIKE ?")
+        params.append(f"%{search_params['tags']}%")
+
+    # Join conditions to form the final query
+    if conditions:
+        query += " AND " + " AND ".join(conditions)
+
+    # Handle sorting
+    sort_by = search_params.get("sort_by", "name")
+    if sort_by:
+        if sort_by == "price":
+            query += " ORDER BY price ASC"
+        elif sort_by == "releaseDate":
+            query += " ORDER BY releaseDate DESC"
+        elif sort_by == "reviews":
+            query += " ORDER BY positive DESC"
+
+    # Limit the results to 12
+    query += " LIMIT 12"
+
+    # Execute the query with the provided parameters
+    cursor.execute(query, tuple(params))
+    filtered_games = cursor.fetchall()
+    conn.close()
+
+    # Prepare the filtered games list for the template
+    game_list = []
+    for game in filtered_games:
+        game_data = {
+            "appID": game[0],
+            "name": game[1],
+            "price": game[2],
+            "image": game[3],
+            "downloads": game[4],
+            "positive": game[5],
+            "genres": game[6],
+            "metacriticScore": game[7],
+            "releaseDate": game[8],
+        }
+        game_list.append(game_data)
+
+    return game_list
