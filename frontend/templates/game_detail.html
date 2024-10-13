@@ -21,8 +21,14 @@
             </div>
             <p class="mt-4 text-3xl font-bold">${{ game['price'] }}</p>
             <div class="flex space-x-4 mt-4">
-                <button class="bg-purple-600 text-white px-4 py-2 rounded">Buy now</button>
-                <button class="bg-gray-700 text-white px-4 py-2 rounded">Add to cart</button>
+                <button class="bg-purple-600 text-white px-4 py-2 rounded" onclick="postRequest('/buy_now', '{{ game['name'] }}')">Buy now</button>
+                <button class="bg-gray-700 text-white px-4 py-2 rounded" onclick="postRequest('/add_to_cart', '{{ game['name'] }}')" {% if added_to_cart %}disabled{% endif %}>
+                    {% if added_to_cart %}
+                        Added to Cart
+                    {% else %}
+                        Add to cart
+                    {% endif %}
+                </button>
             </div>
         </div>
     </div>
@@ -117,5 +123,23 @@
         currentIndex = (currentIndex - 1 + totalSlides) % totalSlides; // Loop back to the last slide
         updateCarousel();
     });
+
+    // Function to send POST request with game name
+    function postRequest(url, gameName) {
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ game_name: gameName })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
 </script>
 {% endblock %}

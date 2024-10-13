@@ -39,7 +39,8 @@ def init_db():
         CREATE TABLE IF NOT EXISTS users (
             username TEXT PRIMARY KEY,
             email TEXT NOT NULL,
-            password TEXT NOT NULL
+            password TEXT NOT NULL,
+            cart_games TEXT
         )
     """
     )
@@ -68,6 +69,28 @@ def add_user(username, email, password):
         (username, email, password),
     )
     conn.commit()
+    conn.close()
+
+
+def update_cart(email, game_name):
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT cart_games FROM users WHERE email = ?", (email,))
+    cart_games = cursor.fetchone()[0]
+    if cart_games:
+        cart_games_list = cart_games.split(",")
+    else:
+        cart_games_list = []
+
+    # Check if the game is already in the cart
+    if game_name not in cart_games_list:
+        cart_games_list.append(game_name)
+        cursor.execute(
+            "UPDATE users SET cart_games = ? WHERE email = ?",
+            (",".join(cart_games_list), email),
+        )
+        conn.commit()
+
     conn.close()
 
 
@@ -213,20 +236,91 @@ def signout():
 @app.route("/game/<game_name>")
 def game_page(game_name):
     game_data = get_game_data(game_name)
+    added_to_cart = False
+
+    if "user" in session:
+        username = session["user"]
+        user = get_user(username)
+        if user and user[3]:  # Check if cart_games is not None
+            cart_games_list = user[3].split(",")
+            added_to_cart = game_name in cart_games_list
+
     if game_data:
-        return render_template("game_detail.html", game=game_data)
+        return render_template(
+            "game_detail.html", game=game_data, added_to_cart=added_to_cart
+        )
     else:
         return "Game not found", 404
 
 
+@app.route("/add_to_cart", methods=["POST"])
+def add_to_cart():
+    if "user" not in session:
+        flash("Please sign in to add games to your cart.", "error")
+        return redirect(url_for("signin"))
+
+    data = request.get_json()
+    game_name = data.get("game_name")
+    username = session["user"]
+
+    update_cart(username, game_name)
+    flash(f"{game_name} added to cart.", "success")
+    return jsonify({"message": "Game added to cart"})
+
+
+@app.route("/buy_now", methods=["POST"])
+def buy_now():
+    if "user" not in session:
+        flash("Please sign in to purchase games.", "error")
+        return redirect(url_for("signin"))
+
+    data = request.get_json()
+    game_name = data.get("game_name")
+    username = session["user"]
+
+    update_cart(username, game_name)
+    flash(f"{game_name} added to cart. Proceeding to checkout.", "success")
+    return jsonify({"redirect": url_for("cart")})
+
+
 # New route for cart
-@app.route("/cart")
+@app.route("/cart", methods=["GET", "POST"])
 def cart():
     if "user" not in session:
         flash("Please sign in to access your cart.", "error")
         return redirect(url_for("signin"))
-    # If the user is signed in, render the cart page
-    return render_template("continue_payment.html")
+
+    username = session["user"]
+    user = get_user(username)
+    cart_games_list = user[3].split(",") if user and user[3] else []
+
+    if request.method == "POST":
+        data = request.get_json()
+        action = data.get("action")
+        game_name = data.get("game_name", None)
+
+        if action == "remove" and game_name:
+            if game_name in cart_games_list:
+                cart_games_list.remove(game_name)
+        elif action == "remove_all":
+            cart_games_list = []
+
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE users SET cart_games = ? WHERE email = ?",
+            (",".join(cart_games_list), username),
+        )
+        conn.commit()
+        conn.close()
+
+        return jsonify({"success": True})
+
+    cart_games_data = [
+        get_game_data(game_name) for game_name in cart_games_list
+    ]
+
+    return render_template("continue_payment.html", cart_games=cart_games_data)
 
 
 if __name__ == "__main__":
