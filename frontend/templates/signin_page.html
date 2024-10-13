@@ -1,26 +1,29 @@
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <title>Sign In - GAMERCE</title>
 </head>
 <body class="bg-black flex items-center justify-center min-h-screen">
-    <div class="bg-gray-900 p-8 rounded-lg shadow-lg w-96">
+    <div class="bg-gray-900 p-6 md:p-8 rounded-lg shadow-lg w-full max-w-xs md:max-w-md">
         <div class="flex justify-center mb-6">
             <div class="flex items-center">
                 <a href="/" class="flex items-center">
-                <div class="bg-purple-600 p-2 rounded-full">
-                    <i class="fas fa-play text-white"></i>
-                </div>
-                <span class="text-white text-lg font-semibold ml-2">GAMERCE</span>
+                    <div class="bg-purple-600 p-2 rounded-full">
+                        <i class="fas fa-play text-white"></i>
+                    </div>
+                    <span class="text-white text-lg font-semibold ml-2">GAMERCE</span>
                 </a>
             </div>
         </div>
 
         <!-- Sign-In Form -->
         <form action="/signin" method="POST">
-            <!-- Email Input -->
+            <!-- Username Input -->
             <div class="mb-4">
-                <input type="username" name="username" placeholder="Email" class="w-full p-3 bg-gray-800 text-white rounded focus:outline-none focus:ring-2 focus:ring-purple-600" required>
+                <input type="username" name="username" placeholder="Username" class="w-full p-3 bg-gray-800 text-white rounded focus:outline-none focus:ring-2 focus:ring-purple-600" required>
             </div>
 
             <!-- Password Input -->
@@ -37,9 +40,7 @@
             </div>            
 
             <!-- Sign-Up Redirect -->
-            <div class="mb-4">
-                <a href="/signup" class="w-full p-3 bg-purple-600 text-white rounded hover:bg-purple-700 text-center block">Not have an account? Sign Up</a>
-            </div>           
+            <p class="text-white my-4">Don't have an account? <a href="/signup" class="text-purple-500 hover:underline">Sign Up</a></p>
 
             <!-- Google Sign-In (Optional) -->
             <div class="mb-4">

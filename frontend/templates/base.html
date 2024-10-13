@@ -47,8 +47,8 @@
             
             {% if 'user' in session %}
                 <!-- Show SVG if user is signed in -->
-                <div>
-                    <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <div class="relative">
+                    <svg onclick="toggleLogoutPopup()" width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" class="cursor-pointer">
                         <circle cx="17" cy="17" r="17" fill="#1E1E1E"/>
                         <g clip-path="url(#clip0_15_401)">
                             <path d="M17.0002 15.1779C18.9659 15.1779 20.5594 13.5711 20.5594 11.589C20.5594 9.60683 18.9659 8 17.0002 8C15.0344 8 13.4409 9.60683 13.4409 11.589C13.4409 13.5711 15.0344 15.1779 17.0002 15.1779Z" fill="white"/>
@@ -60,7 +60,26 @@
                             </clipPath>
                         </defs>
                     </svg>
+                    <div id="logoutPopup" class="absolute right-0 mt-2 w-32 bg-white text-black rounded shadow-lg hidden">
+                        <button onclick="logout()" class="w-full text-left px-4 py-2 hover:bg-gray-200">Logout</button>
+                    </div>
                 </div>
+                <script>
+                    function toggleLogoutPopup() {
+                        const popup = document.getElementById('logoutPopup');
+                        popup.classList.toggle('hidden');
+                        if (!popup.classList.contains('hidden')) {
+                            popup.style.zIndex = '9999';
+                            popup.style.backgroundColor = 'black';
+                            popup.style.color = 'white';
+                            popup.classList.add('hover:bg-gray-200');
+                        }
+                    }
+
+                    function logout() {
+                        window.location.href = '/signout';
+                    }
+                </script>
             {% else %}
                 <!-- Show FontAwesome user icon if user is not signed in -->
                 <a href="/signin"><i class="fas fa-user"></i></a>
