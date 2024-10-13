@@ -5,7 +5,7 @@
 {% block content %}
 <main>
     <!-- Best Selling Game Section -->
-    <section class="relative w-full h-[30rem] overflow-hidden">
+    <section class="relative w-full h-[20rem] sm:h-[30rem] overflow-hidden">
         <div id="carousel" class="flex transition-transform duration-700 ease-in-out">
             <!-- Carousel items will be inserted dynamically here -->
         </div>
@@ -22,13 +22,13 @@
     </section>
 
     <!-- Recommended for you Section -->
-    <section class="p-8">
-        <h2 class="text-2xl font-bold mb-4 px-8" >Recommended for you</h2>
-        <div class="grid grid-cols-6 gap-4">
+    <section class="p-4 sm:p-8">
+        <h2 class="text-lg sm:text-2xl font-bold mb-4 px-4 sm:px-8">Recommended for you</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
             {% for game in all_games['games'] %}
-            <div class="text-center game-item px-8 cursor-pointer" data-game-id="{{ game['name'] }}">
-                <img src="{{ game.image }}" alt="{{ game.name }} cover" class="w-full h-72 object-cover">
-                <div class="mt-4">{{ game.name }}</div>
+            <div class="text-center game-item px-4 sm:px-8 cursor-pointer" data-game-id="{{ game['name'] }}">
+                <img src="{{ game.image }}" alt="{{ game.name }} cover" class="w-full h-48 sm:h-72 object-cover">
+                <div class="mt-2 sm:mt-4">{{ game.name }}</div>
                 <div class="text-gray-400">${{ game.price }}</div>
                 <div class="text-gray-400">Match {{ game.match_percentage }}%</div>
             </div>
@@ -40,12 +40,12 @@
     
 
     <!-- Action Section -->
-    <section class="p-8">
-        <h2 class="text-2xl font-bold mb-4 px-8">Action</h2>
-        <div class="grid grid-cols-6 gap-4">
+    <section class="p-4 sm:p-8">
+        <h2 class="text-lg sm:text-2xl font-bold mb-4 px-4 sm:px-8">Action</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
             {% for game in all_games['top_action_games'] %}
-            <div class="text-center game-item px-8 cursor-pointer" data-game-id="{{ game['name'] }}">
-                <img src="{{ game.image }}" alt="{{ game.name }} cover" class="w-full h-72 object-cover">
+            <div class="text-center game-item px-4 sm:px-8 cursor-pointer" data-game-id="{{ game['name'] }}">
+                <img src="{{ game.image }}" alt="{{ game.name }} cover" class="w-full h-48 sm:h-72 object-cover">
                 <div class="mt-2">{{ game.name }}</div>
                 <div class="text-gray-400">${{ game.price }}</div>
             </div>
@@ -56,12 +56,12 @@
     </section>
 
     <!-- Open World Section -->
-    <section class="p-8">
-        <h2 class="text-2xl font-bold mb-4 px-8">Open World</h2>
-        <div class="grid grid-cols-6 gap-4">
+    <section class="p-4 sm:p-8">
+        <h2 class="text-lg sm:text-2xl font-bold mb-4 px-4 sm:px-8">Open World</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
             {% for game in all_games['top_open_world_games'] %}
-            <div class="text-center game-item px-8 cursor-pointer" data-game-id="{{ game['name'] }}">
-                <img src="{{ game.image }}" alt="{{ game.name }} cover" class="w-full h-72 object-cover">
+            <div class="text-center game-item px-4 sm:px-8 cursor-pointer" data-game-id="{{ game['name'] }}">
+                <img src="{{ game.image }}" alt="{{ game.name }} cover" class="w-full h-48 sm:h-72 object-cover">
                 <div class="mt-2">{{ game.name }}</div>
                 <div class="text-gray-400">${{ game.price }}</div>
             </div>
@@ -81,23 +81,23 @@
     // Generate carousel items dynamically
     games.forEach(game => {
         const item = document.createElement('div');
-        item.classList.add('w-full', 'h-[30rem]', 'relative', 'flex-shrink-0');
+        item.classList.add('w-full', 'h-[20rem]', 'sm:h-[30rem]', 'relative', 'flex-shrink-0');
 
         item.innerHTML = `
-            <img src="${game.image}" alt="${game.name}" class="w-full h-[30rem] object-cover">
+            <img src="${game.image}" alt="${game.name}" class="w-full h-[20rem] sm:h-[30rem] object-cover">
             <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-black via-transparent to-transparent flex flex-col justify-center p-8">
-                <h2 class="text-purple-500 text-xl font-bold">Best Selling Game</h2>
-                <h1 class="text-4xl font-bold">${game.name}</h1>
-                <p class="mt-4 text-md max-w-2xl">
+                <h2 class="text-purple-500 text-md sm:text-xl font-bold">Best Selling Game</h2>
+                <h1 class="text-2xl sm:text-4xl font-bold">${game.name}</h1>
+                <p class="mt-2 sm:mt-4 text-sm sm:text-md max-w-2xl">
                     ${game.shortDesc}
                 </p>
-                <div class="mt-4">
-                    <span class="text-white text-lg font-bold">
+                <div class="mt-2 sm:mt-4">
+                    <span class="text-white text-md sm:text-lg font-bold">
                         ${game.totalDownloads >= 1000000 ? (game.totalDownloads / 1000000).toFixed(1) + 'M' : (game.totalDownloads / 1000).toFixed(1) + 'k'} Downloads
                     </span>
                 </div>
                 <div class="mt-2 flex items-center">
-                    <span class="text-yellow-500 text-lg font-bold">${game.metacriticScore}</span>
+                    <span class="text-yellow-500 text-md sm:text-lg font-bold">${game.metacriticScore}</span>
                     <div class="ml-4 flex items-center">
                         <i class="fas fa-star text-yellow-500"></i>
                         <i class="fas fa-star text-yellow-500"></i>

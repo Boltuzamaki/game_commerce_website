@@ -9,7 +9,7 @@
     <div class="flex-1 space-y-6">
       {% for game in cart_games %}
       <div class="flex space-x-4">
-        <img alt="{{ game.name }} game cover" class="w-24 h-36 object-cover" height="150" src="{{ game.headerImage }}" width="100"/>
+        <img alt="{{ game.name }} game cover" class="w-24 h-36 object-cover sm:w-16 sm:h-24" src="{{ game.headerImage }}" />
         <div class="flex-1">
           <div class="flex justify-between">
             <h2 class="text-xl font-bold">{{ game.name }}</h2>
@@ -23,7 +23,7 @@
       </div>
       {% endfor %}
       <div class="flex space-x-4">
-        <button class="bg-gray-700 text-white py-2 px-4 rounded hover:bg-green-600">Continue shopping</button>
+        <button class="bg-gray-700 text-white py-2 px-4 rounded hover:bg-green-600" onclick="window.location.href='/'">Continue shopping</button>
         <button class="bg-gray-700 text-white py-2 px-4 rounded hover:bg-red-600" onclick="removeAllGames()">Remove all</button>
       </div>
     </div>
@@ -48,9 +48,9 @@
   <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
   
   <div class="relative bg-black text-white rounded-lg shadow-lg w-full max-w-4xl h-[80vh] overflow-hidden">
-    <div class="flex h-full">
+    <div class="flex flex-col lg:flex-row h-full">
       <!-- Left side (Payment options) -->
-      <div class="p-8 w-1/2 h-full flex flex-col justify-between overflow-y-auto">
+      <div class="p-8 w-full lg:w-1/2 h-full flex flex-col justify-between overflow-y-auto">
         <div>
           <div class="flex justify-between items-center mb-8">
             <h2 class="text-2xl font-semibold">Checkout</h2>
@@ -83,7 +83,7 @@
       </div>
       
       <!-- Right side (Order Summary) -->
-      <div class="w-1/2 bg-gray-900 p-8 rounded-r-lg h-full flex flex-col">
+      <div class="w-full lg:w-1/2 bg-gray-900 p-8 rounded-r-lg h-full flex flex-col">
         <div class="flex justify-between items-center mb-8">
           <h2 class="text-2xl font-semibold">Order Summary</h2>
           <button class="text-gray-400 hover:text-white" onclick="closeModal()">

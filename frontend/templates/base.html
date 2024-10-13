@@ -6,6 +6,23 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>{% block title %}GAMERCE{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+                /* Mobile first, default order */
+        .order-1 {
+            order: 1;
+        }
+
+        .order-2 {
+            order: 2;
+        }
+
+        /* Reorder for desktop view */
+        @media (min-width: 768px) {
+            .md\:order-none {
+                order: 0;
+            }
+        }
+    </style>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
 </head>
 
