@@ -1,4 +1,16 @@
-from flask import Flask, jsonify, render_template, request
+import os
+import sqlite3
+
+from flask import (
+    Flask,
+    flash,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
 from src.game_page.utils import get_game_data
 from src.index.utils import (
     get_games,
@@ -7,8 +19,56 @@ from src.index.utils import (
 )
 from src.search.constants import GENRES
 from src.search.utils import filter_games, get_high_score_games, search_games
+from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
+app.secret_key = "your_secret_key"  # Set a secret key for session management
+
+
+# Get the directory of the current script
+base_dir = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.join(base_dir, "users.db")
+
+
+# Initialize SQLite database
+def init_db():
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS users (
+            username TEXT PRIMARY KEY,
+            email TEXT NOT NULL,
+            password TEXT NOT NULL
+        )
+    """
+    )
+    conn.commit()
+    conn.close()
+
+
+init_db()
+
+
+# Function to get user by username
+def get_user(username):
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users WHERE email = ?", (username,))
+    user = cursor.fetchone()
+    conn.close()
+    return user
+
+
+def add_user(username, email, password):
+    conn = sqlite3.connect("users.db")
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
+        (username, email, password),
+    )
+    conn.commit()
+    conn.close()
 
 
 @app.route("/")
@@ -93,22 +153,61 @@ def search():
     )
 
 
-@app.route("/signin")
+@app.route("/signin", methods=["GET", "POST"])
 def signin():
-    # Fetch games data from the database
-    games = get_games()
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        user = get_user(username)
 
-    # Render the template with game data
-    return render_template("signin_page.html", games=games)
+        # Check if user exists and password matches
+        if user and check_password_hash(user[2], password):
+            session["user"] = username
+            flash(
+                "Successfully signed in!", "success"
+            )  # Flash success message
+            return redirect(url_for("home"))
+        else:
+            flash(
+                "Invalid credentials. Please try again.", "error"
+            )  # Flash error message
+            return redirect(url_for("signin"))
+
+    return render_template("signin_page.html")
 
 
-@app.route("/signin")
+@app.route("/signup", methods=["GET", "POST"])
 def signup():
-    # Fetch games data from the database
-    games = get_games()
+    if request.method == "POST":
+        username = request.form.get("username")
+        email = request.form.get("email")
+        password = request.form.get("password")
 
-    # Render the template with game data
-    return render_template("signin_page.html", games=games)
+        # Check if the user already exists
+        if get_user(username):
+            flash(
+                "Username already exists. Please choose a different one.",
+                "error",
+            )
+            return render_template("signup_page.html")
+
+        # Hash the password for security
+        hashed_password = generate_password_hash(password)
+
+        # Store the user information in the database
+        add_user(username, email, hashed_password)
+
+        flash("Account created successfully! Please sign in.", "success")
+        return redirect(url_for("signin"))
+
+    return render_template("signup_page.html")
+
+
+@app.route("/signout")
+def signout():
+    session.pop("user", None)
+    flash("Successfully signed out.", "success")
+    return redirect(url_for("home"))
 
 
 @app.route("/game/<game_name>")
@@ -118,6 +217,16 @@ def game_page(game_name):
         return render_template("game_detail.html", game=game_data)
     else:
         return "Game not found", 404
+
+
+# New route for cart
+@app.route("/cart")
+def cart():
+    if "user" not in session:
+        flash("Please sign in to access your cart.", "error")
+        return redirect(url_for("signin"))
+    # If the user is signed in, render the cart page
+    return render_template("continue_payment.html")
 
 
 if __name__ == "__main__":

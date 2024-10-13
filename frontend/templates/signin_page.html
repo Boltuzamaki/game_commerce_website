@@ -15,22 +15,33 @@
                 </a>
             </div>
         </div>
-        <form>
+
+        <!-- Sign-In Form -->
+        <form action="/signin" method="POST">
+            <!-- Email Input -->
             <div class="mb-4">
-                <input type="email" placeholder="Email" class="w-full p-3 bg-gray-800 text-white rounded focus:outline-none focus:ring-2 focus:ring-purple-600">
+                <input type="email" name="username" placeholder="Email" class="w-full p-3 bg-gray-800 text-white rounded focus:outline-none focus:ring-2 focus:ring-purple-600" required>
             </div>
+
+            <!-- Password Input -->
             <div class="mb-4 relative">
-                <input type="password" placeholder="Password" class="w-full p-3 bg-gray-800 text-white rounded focus:outline-none focus:ring-2 focus:ring-purple-600">
+                <input type="password" name="password" placeholder="Password" class="w-full p-3 bg-gray-800 text-white rounded focus:outline-none focus:ring-2 focus:ring-purple-600" required>
                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400">
                     <i class="fas fa-eye-slash"></i>
                 </div>
             </div>
+
+            <!-- Submit Button -->
             <div class="mb-4">
-                <a href="/signin" class="w-full p-3 bg-purple-600 text-white rounded hover:bg-purple-700 text-center block">Sign In</a>
+                <button type="submit" class="w-full p-3 bg-purple-600 text-white rounded hover:bg-purple-700 text-center block">Sign In</button>
             </div>            
+
+            <!-- Sign-Up Redirect -->
             <div class="mb-4">
-                <a href="/signup" class="w-full p-3 bg-purple-600 text-white rounded hover:bg-purple-700 text-center block">Not have account</a>
+                <a href="/signup" class="w-full p-3 bg-purple-600 text-white rounded hover:bg-purple-700 text-center block">Not have an account? Sign Up</a>
             </div>           
+
+            <!-- Google Sign-In (Optional) -->
             <div class="mb-4">
                 <button type="button" class="w-full p-3 bg-gray-800 text-white rounded flex items-center justify-center hover:bg-gray-700">
                     <i class="fab fa-google text-red-500 mr-2"></i>

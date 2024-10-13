@@ -38,8 +38,8 @@
             <!-- Price Range -->
             <div class="mb-4">
                 <p class="font-bold">Price</p>
-                <input id="price-range" class="w-full" max="77" min="10" type="range" value="{{ price_range or 77 }}" />
-                <p>$10 - ${{ price_range or 77 }}</p>
+                <input id="price-range" class="w-full" max="1000" min="0" type="range" value="{{ price_range or 1000 }}" />
+                <p>$0 - ${{ price_range or 1000 }}</p>
             </div>
 
             <!-- Genre List -->
@@ -91,6 +91,44 @@
     // Handle Apply Filters button click
     document.getElementById('apply-filters').addEventListener('click', function() {
         applyFiltersAndSorting();
+    });
+
+    // Handle Enter key press on search input
+    document.getElementById('search-input').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            const query = this.value;
+            fetch('/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    q: query  // Send search query
+                })
+            }).then(response => response.json())
+            .then(data => {
+                // Dynamically update the game list without reloading the page
+                const gameListContainer = document.getElementById('game-list');
+                gameListContainer.innerHTML = ''; // Clear existing game list
+                
+                if (data.length > 0) {
+                    data.forEach(game => {
+                        const gameItem = `
+                        <div class="text-left game-item px-12 cursor-pointer hover:cursor-pointer" data-game-id="${game.name}">
+                            <img alt="${game.name} game cover" class="w-full h-96 object-cover" src="${game.image}" />
+                            <div class="mt-2 font-bold">${game.name}</div>
+                            <div class="text-gray-400">$${game.price}</div>
+                        </div>`;
+                        gameListContainer.insertAdjacentHTML('beforeend', gameItem);
+                    });
+                } else {
+                    gameListContainer.innerHTML = '<p>No games available.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Failed to search games', error);
+            });
+        }
     });
 
     function applyFiltersAndSorting(sortBy = null) {
