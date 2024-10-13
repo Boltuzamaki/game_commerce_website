@@ -52,6 +52,16 @@ def init_db():
 init_db()
 
 
+@app.context_processor
+def inject_cart_count():
+    cart_count = 0
+    if "user" in session:
+        user = get_user(session["user"])
+        if user and user[3]:
+            cart_count = len(user[3].split(","))
+    return dict(cart_count=cart_count)
+
+
 @app.route("/")
 def home():
     # Fetch games data from the database
@@ -66,10 +76,19 @@ def home():
         "top_open_world_games": top_open_world_games,
         "get_top_games_from_last_month": get_top_games_from_lm,
     }
-    # Render the template with game data
+
+    # Check if the user is signed in and get cart count
+    cart_count = 0
+    if "user" in session:
+        user = get_user(session["user"])
+        if (
+            user and user[3]
+        ):  # cart_games is stored as a comma-separated string
+            cart_count = len(user[3].split(","))
+
+    # Render the template with game data and cart count
     return render_template(
-        "index.html",
-        all_games=all_games,
+        "index.html", all_games=all_games, cart_count=cart_count
     )
 
 

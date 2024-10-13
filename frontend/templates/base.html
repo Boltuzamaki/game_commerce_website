@@ -32,9 +32,17 @@
             <i class="fas fa-play text-purple-500"></i>
             <span class="ml-2 text-lg font-bold">GAMERCE</span>
         </a>
-
+    
         <div class="flex items-center space-x-4">
-            <a href="/cart"><i class="fas fa-shopping-cart"></i></a>
+            <a href="/cart" class="relative">
+                <i class="fas fa-shopping-cart"></i>
+                {% if 'user' in session %}
+                    <!-- Show the cart count dynamically -->
+                    <span id="cart-count" class="absolute top-0 right-0 bg-red-600 text-white rounded-full px-2 text-xs">
+                        {{ cart_count if cart_count > 0 else "" }}
+                    </span>
+                {% endif %}
+            </a>
             <a href="/search"><i class="fas fa-search"></i></a>
             
             {% if 'user' in session %}
@@ -59,6 +67,7 @@
             {% endif %}
         </div>
     </header>
+    
 
     <main>
         <!-- Content block that will be overridden by other templates -->

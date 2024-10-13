@@ -163,5 +163,27 @@
     })
     .catch(error => console.error('Error:', error));
   }
+  // Function to send POST request with game name
+function postRequest(url, gameName) {
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ game_name: gameName })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Success:', data);
+        // Dynamically update the cart count
+        const cartCountElem = document.getElementById('cart-count');
+        let currentCount = parseInt(cartCountElem.textContent) || 0;
+        cartCountElem.textContent = currentCount + 1;
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
 </script>
 {% endblock %}
