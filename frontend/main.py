@@ -2,9 +2,11 @@ import os
 import sqlite3
 import time
 from datetime import datetime
+from functools import wraps
 
 from flask import (
     Flask,
+    abort,
     flash,
     jsonify,
     redirect,
@@ -33,6 +35,19 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 # Create upload folder if it doesn't exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+
+# Admin required decorator with stronger security
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("user"):
+            abort(401)  # Unauthorized
+        if not session.get("is_admin"):
+            abort(403)  # Forbidden
+        return f(*args, **kwargs)
+
+    return decorated_function
 
 
 def allowed_file(filename):
@@ -118,6 +133,7 @@ def home():
 
 
 @app.route("/dashboard")
+@admin_required
 def dashboard():
     # Data for the chart
     chart_data = {
@@ -187,6 +203,7 @@ def publisher_add_new_game():
 
 
 @app.route("/settings")
+@admin_required
 def usersetting():
     # Data for the chart
 
@@ -194,6 +211,7 @@ def usersetting():
 
 
 @app.route("/add-game", methods=["GET", "POST"])
+@admin_required
 def add_game():
     if request.method == "POST":
         # Get form data
@@ -268,6 +286,7 @@ def add_game():
 
 
 @app.route("/notifications")
+@admin_required
 def notificationmanagement():
     # Data for the chart
 
@@ -275,6 +294,7 @@ def notificationmanagement():
 
 
 @app.route("/user-management")
+@admin_required
 def user_management():
     users = [
         {"id": 1, "name": "UserName #1"},
@@ -288,6 +308,7 @@ def user_management():
 
 
 @app.route("/notification-management")
+@admin_required
 def notification_management():
     return render_template("admin_notification_management.html")
 
@@ -358,11 +379,20 @@ def signin():
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
+
+        # Check for admin credentials
+        if username == "admin@gmail.com" and password == "admin":
+            session["user"] = username
+            session["is_admin"] = True
+            flash("Welcome Admin!", "success")
+            return redirect(url_for("dashboard"))
+
         user = get_user(username)
 
         # Check if user exists and password matches
         if user and check_password_hash(user[2], password):
             session["user"] = username
+            session["is_admin"] = False
             flash(
                 "Successfully signed in!", "success"
             )  # Flash success message
@@ -406,6 +436,7 @@ def signup():
 @app.route("/signout")
 def signout():
     session.pop("user", None)
+    session.pop("is_admin", None)
     flash("Successfully signed out.", "success")
     return redirect(url_for("home"))
 
