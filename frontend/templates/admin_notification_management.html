@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}
+GAMERCE - Notification Management
+{% endblock %}
+
+{% block content %}
+<div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside class="w-1/4 bg-black p-4 border-r border-gray-800">
+        <nav class="space-y-4">
+            <a href="/dashboard" class="block text-white">Dashboard</a>
+            <a href="/settings" class="block text-white">Settings</a>
+            <a href="/user-management" class="block text-white">User Management</a>
+            <a href="/add-game" class="block text-white">Add new game</a>
+            <a href="/notifications" class="block text-purple-600">Notification Management</a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col">
+        <!-- Header -->
+        <header class="flex items-center justify-between p-4 bg-black border-b border-gray-800">
+            <div class="text-purple-600 text-xl font-bold">GAMERCE</div>
+            <div class="flex items-center space-x-4">
+                <i class="fas fa-bell text-white"></i>
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-user text-white"></i>
+                    <span>Admin</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Section -->
+        <section class="flex-1 p-8">
+            <form class="space-y-4">
+                <div>
+                    <label for="notification-title" class="block text-white">Notification title</label>
+                    <input type="text" id="notification-title" class="w-full p-2 bg-gray-800 text-white border border-gray-700 rounded">
+                </div>
+                <div>
+                    <label for="notification-text" class="block text-white">Notification text</label>
+                    <textarea id="notification-text" rows="6" class="w-full p-2 bg-gray-800 text-white border border-gray-700 rounded"></textarea>
+                </div>
+                <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded">Send</button>
+            </form>
+        </section>
+    </main>
+</div>
+
+{% endblock %}

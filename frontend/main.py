@@ -93,6 +93,74 @@ def home():
     )
 
 
+@app.route("/dashboard")
+def dashboard():
+    # Data for the chart
+    chart_data = {
+        "labels": ["Week 1", "Week 2", "Week 3", "Week 4"],
+        "datasets": [
+            {
+                "label": "Wolfenstein II",
+                "data": [12, 19, 3, 5],
+                "backgroundColor": "rgba(34, 197, 94, 0.8)",
+            },
+            {
+                "label": "WWE 2K24",
+                "data": [5, 10, 8, 15],
+                "backgroundColor": "rgba(168, 85, 247, 0.8)",
+            },
+            {
+                "label": "Cyberpunk 2077",
+                "data": [10, 12, 15, 20],
+                "backgroundColor": "rgba(163, 230, 53, 0.8)",
+            },
+        ],
+    }
+
+    return render_template(
+        "admin_dashboard.html", chart_data=chart_data, admin_name="Admin"
+    )
+
+
+@app.route("/settings")
+def usersetting():
+    # Data for the chart
+
+    return render_template("admin_user_settings.html")
+
+
+@app.route("/add-game")
+def addgameusers():
+    # Data for the chart
+
+    return render_template("admin_add_game_user.html")
+
+
+@app.route("/notifications")
+def notificationmanagement():
+    # Data for the chart
+
+    return render_template("admin_notification_management.html")
+
+
+@app.route("/user-management")
+def user_management():
+    users = [
+        {"id": 1, "name": "UserName #1"},
+        {"id": 2, "name": "UserName #2"},
+        {"id": 3, "name": "UserName #3"},
+        {"id": 4, "name": "UserName #4"},
+        {"id": 5, "name": "UserName #5"},
+        {"id": 6, "name": "UserName #6"},
+    ]
+    return render_template("admin_user_management.html", users=users)
+
+
+@app.route("/notification-management")
+def notification_management():
+    return render_template("admin_notification_management.html")
+
+
 @app.route("/search", methods=["GET", "POST"])
 def search():
     if request.method == "POST":

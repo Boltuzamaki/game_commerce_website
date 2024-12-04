@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}
+GAMERCE - User Management
+{% endblock %}
+
+{% block content %}
+<div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-black text-purple-500 p-4 flex flex-col">
+        <nav>
+            <ul class="space-y-4">
+                <li><a href="/dashboard" class="block hover:text-white">Dashboard</a></li>
+                <li><a href="/settings" class="block text-gray-400 hover:text-white">Settings</a></li>
+                <li><a href="/user-management" class="block text-white font-bold">User Management</a></li>
+                <li><a href="/add-game" class="block text-gray-400 hover:text-white">Add new game</a></li>
+                <li><a href="/notifications" class="block text-gray-400 hover:text-white">Notification Management</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6">
+
+        <!-- User List -->
+        <section class="bg-gray-900 p-6 rounded-lg">
+            <ul class="divide-y divide-gray-700">
+                {% for user in users %}
+                <li class="flex items-center justify-between py-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                        <span class="text-white">UserName #{{ loop.index }}</span>
+                    </div>
+                    <div class="flex space-x-4">
+                        <button
+                            class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+                            onclick="blockUser({{ loop.index }})"
+                        >
+                            Block
+                        </button>
+                        <button
+                            class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+                            onclick="unblockUser({{ loop.index }})"
+                        >
+                            Unblock
+                        </button>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+    </main>
+</div>
+
+<script>
+    function blockUser(userId) {
+        console.log(`Blocking user with ID: ${userId}`);
+        // Add your backend call for blocking a user here
+    }
+
+    function unblockUser(userId) {
+        console.log(`Unblocking user with ID: ${userId}`);
+        // Add your backend call for unblocking a user here
+    }
+</script>
+{% endblock %}
