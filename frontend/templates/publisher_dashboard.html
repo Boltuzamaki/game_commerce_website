@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}
+GAMERCE Dashboard
+{% endblock %}
+
+{% block content %}
+<div class="flex flex-col md:flex-row h-screen">
+    <!-- Sidebar -->
+    <aside class="w-full md:w-64 bg-black text-purple-500 p-4 flex flex-col">
+        <nav>
+            <ul class="space-y-4">
+                <li><a href="/publisher-dashboard" class="block hover:text-white">Dashboard</a></li>
+                <li><a href="/publisher-settings" class="block text-gray-400 hover:text-white">Settings</a></li>
+                <li><a href="/publisher-add-new-game" class="block text-gray-400 hover:text-white">Add new game</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6">
+        <!-- Chart Section -->
+        <section class="bg-gray-900 p-6 rounded-lg">
+            <canvas id="chart" class="w-full h-64"></canvas>
+            <ul class="mt-4 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                <li class="flex items-center space-x-2">
+                    <span class="w-4 h-4 bg-green-500 rounded-full"></span>
+                    <span>Wolfenstein II</span>
+                </li>
+                <li class="flex items-center space-x-2">
+                    <span class="w-4 h-4 bg-purple-500 rounded-full"></span>
+                    <span>WWE 2K24</span>
+                </li>
+                <li class="flex items-center space-x-2">
+                    <span class="w-4 h-4 bg-lime-500 rounded-full"></span>
+                    <span>Cyberpunk 2077</span>
+                </li>
+            </ul>
+        </section>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('chart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+            datasets: [
+                {
+                    label: 'Wolfenstein II',
+                    data: [12, 19, 3, 5],
+                    backgroundColor: 'rgba(34, 197, 94, 0.8)',
+                },
+                {
+                    label: 'WWE 2K24',
+                    data: [5, 10, 8, 15],
+                    backgroundColor: 'rgba(168, 85, 247, 0.8)',
+                },
+                {
+                    label: 'Cyberpunk 2077',
+                    data: [10, 12, 15, 20],
+                    backgroundColor: 'rgba(163, 230, 53, 0.8)',
+                },
+            ],
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: { color: '#fff' },
+                },
+            },
+            scales: {
+                x: {
+                    ticks: { color: '#fff' },
+                },
+                y: {
+                    ticks: { color: '#fff' },
+                },
+            },
+        },
+    });
+</script>
+{% endblock %}

@@ -118,8 +118,48 @@ def dashboard():
     }
 
     return render_template(
-        "admin_dashboard.html", chart_data=chart_data, admin_name="Admin"
+        "publisher_dashboard.html", chart_data=chart_data, admin_name="Admin"
     )
+
+
+@app.route("/publisher-settings")
+def publishersetting():
+    # Data for the chart
+
+    return render_template("publisher_setting.html")
+
+
+@app.route("/publisher-dashboard")
+def publisherdashboard():
+    chart_data = {
+        "labels": ["Week 1", "Week 2", "Week 3", "Week 4"],
+        "datasets": [
+            {
+                "label": "Wolfenstein II",
+                "data": [12, 19, 3, 5],
+                "backgroundColor": "rgba(34, 197, 94, 0.8)",
+            },
+            {
+                "label": "WWE 2K24",
+                "data": [5, 10, 8, 15],
+                "backgroundColor": "rgba(168, 85, 247, 0.8)",
+            },
+            {
+                "label": "Cyberpunk 2077",
+                "data": [10, 12, 15, 20],
+                "backgroundColor": "rgba(163, 230, 53, 0.8)",
+            },
+        ],
+    }
+
+    return render_template("publisher_dashboard.html", chart_data=chart_data)
+
+
+@app.route("/publisher-add-new-game")
+def publisher_add_new_game():
+    # Data for the chart
+
+    return render_template("publisher_add_new_game.html")
 
 
 @app.route("/settings")
