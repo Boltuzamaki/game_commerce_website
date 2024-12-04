@@ -1,5 +1,7 @@
 import os
 import sqlite3
+import time
+from datetime import datetime
 
 from flask import (
     Flask,
@@ -24,6 +26,28 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"  # Set a secret key for session management
+UPLOAD_FOLDER = "static/uploads"
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+
+# Create upload folder if it doesn't exist
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+
+def allowed_file(filename):
+    return (
+        "." in filename
+        and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+    )
+
+
+def get_db_connection_games():
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(base_dir, "database", "games.db")
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    return conn
 
 
 # Get the directory of the current script
@@ -169,9 +193,76 @@ def usersetting():
     return render_template("admin_user_settings.html")
 
 
-@app.route("/add-game")
-def addgameusers():
-    # Data for the chart
+@app.route("/add-game", methods=["GET", "POST"])
+def add_game():
+    if request.method == "POST":
+        # Get form data
+        title = request.form.get("title")
+        description = request.form.get("description")
+        tags = request.form.get("tags")
+
+        # Handle cover image upload
+        cover_image = request.files.get("cover_image")
+        if cover_image and allowed_file(cover_image.filename):
+            cover_filename = (
+                f"{title.replace(' ', '_')}_cover_{cover_image.filename}"
+            )
+            cover_path = os.path.join(
+                app.config["UPLOAD_FOLDER"], cover_filename
+            )
+            cover_image.save(cover_path)
+        else:
+            flash(
+                "Invalid cover image file type! Only PNG, JPG, JPEG, and GIF are allowed."
+            )
+            return redirect(url_for("add_game"))
+
+        # Handle screenshots upload
+        screenshot_paths = []
+        screenshots = request.files.getlist("screenshots[]")
+        for i, screenshot in enumerate(screenshots):
+            if screenshot and allowed_file(screenshot.filename):
+                screenshot_filename = (
+                    f"{title.replace(' ', '_')}_ss{i}_{screenshot.filename}"
+                )
+                screenshot_path = os.path.join(
+                    app.config["UPLOAD_FOLDER"], screenshot_filename
+                )
+                screenshot.save(screenshot_path)
+                screenshot_paths.append(screenshot_path)
+
+        # Join screenshot paths with separator for storage
+        screenshots_str = " | ".join(screenshot_paths)
+
+        # Generate unique app ID
+        app_id = str(hash(title + str(time.time())))[:6]
+
+        # Save game data to database
+        conn = get_db_connection_games()
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            INSERT INTO games (
+                appID, name, releaseDate, estimatedOwners, longDesc, tags, 
+                headerImage, screenshots
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                app_id,
+                title,
+                datetime.now().strftime("%b %d, %Y"),
+                "0 - 20000",  # Default initial value
+                description,
+                tags,
+                cover_path,
+                screenshots_str,
+            ),
+        )
+        conn.commit()
+        conn.close()
+
+        flash("Game added successfully!")
+        return redirect(url_for("add_game"))
 
     return render_template("admin_add_game_user.html")
 
