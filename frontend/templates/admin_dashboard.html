@@ -5,9 +5,9 @@ GAMERCE Dashboard
 {% endblock %}
 
 {% block content %}
-<div class="flex flex-col md:flex-row h-screen">
+<div class="flex flex-col md:flex-row min-h-screen">
     <!-- Sidebar -->
-    <aside class="w-full md:w-64 bg-black text-purple-500 p-4 flex flex-col">
+    <aside class="w-full md:w-64 bg-black text-purple-500 p-4">
         <nav>
             <ul class="space-y-4">
                 <li><a href="/dashboard" class="block text-purple-600">Dashboard</a></li>
@@ -20,22 +20,24 @@ GAMERCE Dashboard
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 p-6">
+    <main class="flex-1 p-4 md:p-6">
         <!-- Chart Section -->
-        <section class="bg-gray-900 p-6 rounded-lg">
-            <canvas id="chart" class="w-full h-64"></canvas>
-            <ul class="mt-4 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+        <section class="bg-gray-900 p-4 md:p-6 rounded-lg">
+            <div class="w-full h-48 md:h-64 lg:h-96">
+                <canvas id="chart"></canvas>
+            </div>
+            <ul class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <li class="flex items-center space-x-2">
                     <span class="w-4 h-4 bg-green-500 rounded-full"></span>
-                    <span>Wolfenstein II</span>
+                    <span class="text-sm md:text-base">Wolfenstein II</span>
                 </li>
                 <li class="flex items-center space-x-2">
                     <span class="w-4 h-4 bg-purple-500 rounded-full"></span>
-                    <span>WWE 2K24</span>
+                    <span class="text-sm md:text-base">WWE 2K24</span>
                 </li>
                 <li class="flex items-center space-x-2">
                     <span class="w-4 h-4 bg-lime-500 rounded-full"></span>
-                    <span>Cyberpunk 2077</span>
+                    <span class="text-sm md:text-base">Cyberpunk 2077</span>
                 </li>
             </ul>
         </section>
@@ -69,17 +71,28 @@ GAMERCE Dashboard
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    labels: { color: '#fff' },
+                    display: false,
                 },
             },
             scales: {
                 x: {
-                    ticks: { color: '#fff' },
+                    ticks: { 
+                        color: '#fff',
+                        font: {
+                            size: window.innerWidth < 768 ? 10 : 12
+                        }
+                    },
                 },
                 y: {
-                    ticks: { color: '#fff' },
+                    ticks: { 
+                        color: '#fff',
+                        font: {
+                            size: window.innerWidth < 768 ? 10 : 12
+                        }
+                    },
                 },
             },
         },

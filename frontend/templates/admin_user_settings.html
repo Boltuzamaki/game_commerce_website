@@ -5,9 +5,9 @@ GAMERCE Settings
 {% endblock %}
 
 {% block content %}
-<div class="flex h-screen">
+<div class="flex flex-col md:flex-row min-h-screen">
     <!-- Sidebar -->
-    <aside class="w-64 bg-black text-purple-500 p-4 flex flex-col">
+    <aside class="w-full md:w-64 bg-black text-purple-500 p-4">
         <nav>
             <ul class="space-y-4">
                 <li><a href="/dashboard" class="block text-white">Dashboard</a></li>
@@ -21,46 +21,46 @@ GAMERCE Settings
 
     <!-- Main Content -->
     <div class="flex-1 p-4">
-        <div class="flex justify-center items-start mt-10">
-            <div class="w-1/2">
-                <h1 class="text-4xl font-bold mb-6">Settings</h1>
-                <h2 class="text-xl mb-4">Choose your avatar image</h2>
-                <div class="flex items-center mb-6">
-                    <div class="w-40 h-40 bg-gray-700 rounded-full flex items-center justify-center">
-                        <i class="fas fa-user-circle text-6xl text-gray-500"></i>
+        <div class="flex flex-col lg:flex-row justify-center items-start mt-4 md:mt-10">
+            <div class="w-full lg:w-1/2 px-4">
+                <h1 class="text-3xl md:text-4xl font-bold mb-6">Settings</h1>
+                <h2 class="text-lg md:text-xl mb-4">Choose your avatar image</h2>
+                <div class="flex flex-col sm:flex-row items-center mb-6 space-y-4 sm:space-y-0">
+                    <div class="w-32 h-32 md:w-40 md:h-40 bg-gray-700 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user-circle text-5xl md:text-6xl text-gray-500"></i>
                     </div>
-                    <div class="w-20 h-20 bg-gray-700 rounded-full flex items-center justify-center ml-4">
-                        <i class="fas fa-user-circle text-3xl text-gray-500"></i>
+                    <div class="w-16 h-16 md:w-20 md:h-20 bg-gray-700 rounded-full flex items-center justify-center sm:ml-4">
+                        <i class="fas fa-user-circle text-2xl md:text-3xl text-gray-500"></i>
                     </div>
                 </div>
-                <h2 class="text-xl mb-4">Change Password</h2>
+                <h2 class="text-lg md:text-xl mb-4">Change Password</h2>
                 <div class="mb-4">
                     <label class="block text-sm font-medium mb-2">Old Password</label>
                     <div class="relative">
-                        <input type="password" placeholder="Password" class="w-full bg-gray-800 text-white p-3 rounded-md">
-                        <i class="fas fa-eye absolute right-3 top-3 text-gray-500"></i>
+                        <input type="password" placeholder="Password" class="w-full bg-gray-800 text-white p-2 md:p-3 rounded-md">
+                        <i class="fas fa-eye absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
                     </div>
                     <p class="text-xs text-gray-500 mt-1">Your password must be at least six characters and cannot contain spaces or match your email address.</p>
                 </div>
                 <div class="mb-4">
                     <label class="block text-sm font-medium mb-2">New Password</label>
                     <div class="relative">
-                        <input type="password" placeholder="Password" class="w-full bg-gray-800 text-white p-3 rounded-md">
-                        <i class="fas fa-eye absolute right-3 top-3 text-gray-500"></i>
+                        <input type="password" placeholder="Password" class="w-full bg-gray-800 text-white p-2 md:p-3 rounded-md">
+                        <i class="fas fa-eye absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
                     </div>
                 </div>
                 <div class="mb-6">
                     <label class="block text-sm font-medium mb-2">Confirm New Password</label>
                     <div class="relative">
-                        <input type="password" placeholder="Password" class="w-full bg-gray-800 text-white p-3 rounded-md">
-                        <i class="fas fa-eye absolute right-3 top-3 text-gray-500"></i>
+                        <input type="password" placeholder="Password" class="w-full bg-gray-800 text-white p-2 md:p-3 rounded-md">
+                        <i class="fas fa-eye absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
                     </div>
                 </div>
-                <button class="bg-purple-600 text-white py-2 px-4 rounded-md">Set password</button>
+                <button class="w-full sm:w-auto bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 transition">Set password</button>
             </div>
-            <div class="w-1/4 ml-10">
-                <button class="bg-purple-600 text-white py-2 px-4 rounded-md mb-4">Upload your avatar</button>
-                <p class="text-gray-500">Upload a file from your device. Image should be square, at least 184×184 px.</p>
+            <div class="w-full lg:w-1/4 mt-6 lg:mt-0 lg:ml-10 px-4">
+                <button class="w-full bg-purple-600 text-white py-2 px-4 rounded-md mb-4 hover:bg-purple-700 transition">Upload your avatar</button>
+                <p class="text-gray-500 text-sm">Upload a file from your device. Image should be square, at least 184×184 px.</p>
             </div>
         </div>
     </div>
