@@ -118,7 +118,7 @@ def dashboard():
     }
 
     return render_template(
-        "publisher_dashboard.html", chart_data=chart_data, admin_name="Admin"
+        "admin_dashboard.html", chart_data=chart_data, admin_name="Admin"
     )
 
 
