@@ -218,6 +218,7 @@ def add_game():
         title = request.form.get("title")
         description = request.form.get("description")
         tags = request.form.get("tags")
+        price = request.form.get("price")
 
         # Handle cover image upload
         cover_image = request.files.get("cover_image")
@@ -262,8 +263,8 @@ def add_game():
             """
             INSERT INTO games (
                 appID, name, releaseDate, estimatedOwners, longDesc, tags, 
-                headerImage, screenshots
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                headerImage, screenshots, price
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 app_id,
@@ -274,6 +275,7 @@ def add_game():
                 tags,
                 cover_path,
                 screenshots_str,
+                price,
             ),
         )
         conn.commit()

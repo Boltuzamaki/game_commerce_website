@@ -91,3 +91,4 @@ ENV/
 # project
 *.json
 *.db
+uploads
