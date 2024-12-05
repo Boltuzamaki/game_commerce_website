@@ -169,6 +169,43 @@ def publishersetting():
     return render_template("publisher_setting.html")
 
 
+@app.route("/remove-game")
+def remove_game():
+    query = request.args.get("q", "")
+    search_params = {}
+    if query:
+        search_params["name"] = query
+        games_list = filter_games(search_params)
+    else:
+        games_list = get_high_score_games()
+    return render_template(
+        "admin_remove_game.html", get_high_score_games_list=games_list
+    )
+
+
+@app.route("/remove-game/<game_name>", methods=["POST"])
+@admin_required
+def remove_game_by_name(game_name):
+    try:
+        conn = get_db_connection_games()
+        cursor = conn.cursor()
+
+        # Use the LOWER() function to normalize casing for comparison
+        cursor.execute(
+            "DELETE FROM games WHERE LOWER(name) = ?", (game_name.lower(),)
+        )
+
+        # Commit and close the connection
+        conn.commit()
+        conn.close()
+
+        return jsonify(
+            {"success": True, "message": f"{game_name} removed successfully"}
+        )
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
 @app.route("/publisher-dashboard")
 def publisherdashboard():
     chart_data = {
@@ -230,6 +267,8 @@ def add_game():
                 app.config["UPLOAD_FOLDER"], cover_filename
             )
             cover_image.save(cover_path)
+            # Store relative path for database
+            cover_db_path = f"/static/uploads/{cover_filename}"
         else:
             flash(
                 "Invalid cover image file type! Only PNG, JPG, JPEG, and GIF are allowed."
@@ -248,10 +287,14 @@ def add_game():
                     app.config["UPLOAD_FOLDER"], screenshot_filename
                 )
                 screenshot.save(screenshot_path)
-                screenshot_paths.append(screenshot_path)
+                # Store relative path for database
+                screenshot_db_path = f"/static/uploads/{screenshot_filename}"
+                screenshot_paths.append(screenshot_db_path)
 
         # Join screenshot paths with separator for storage
-        screenshots_str = " | ".join(screenshot_paths)
+        screenshots_str = (
+            " | ".join(screenshot_paths) if screenshot_paths else ""
+        )
 
         # Generate unique app ID
         app_id = str(hash(title + str(time.time())))[:6]
@@ -273,8 +316,8 @@ def add_game():
                 "0 - 20000",  # Default initial value
                 description,
                 tags,
-                cover_path,
-                screenshots_str,
+                cover_db_path,  # Store relative path
+                screenshots_str,  # Store relative paths
                 price,
             ),
         )

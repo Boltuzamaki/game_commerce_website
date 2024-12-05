@@ -13,11 +13,11 @@
         <!-- Games List -->
         <div id="game-list" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
             {% for game in get_high_score_games_list %}
-            <div class="text-left game-item px-4 cursor-pointer hover:cursor-pointer" data-game-id="{{ game['name'] }}">
+            <a href="/game/{{ game['name'] }}" class="text-left game-item px-4 cursor-pointer hover:opacity-80 transition-opacity">
                 <img alt="{{ game['name'] }} game cover" class="w-full h-48 sm:h-64 lg:h-96 object-cover" src="{{ game['image'] }}" />
                 <div class="mt-2 font-bold">{{ game['name'] }}</div>
                 <div class="text-gray-400">${{ game['price'] }}</div>
-            </div>
+            </a>
             {% else %}
             <p>No games available.</p>
             {% endfor %}
@@ -70,14 +70,6 @@
 </main>
 
 <script>
-    // Handle clicking on game items
-    document.querySelectorAll('.game-item').forEach(item => {
-        item.addEventListener('click', function() {
-            const gameName = this.dataset.gameId; // Get the game name
-            window.location.href = `/game/${gameName}`; // Redirect to the game page
-        });
-    });
-
     // Handle sorting buttons and retain active state
     document.querySelectorAll('.sort-button').forEach(button => {
         button.addEventListener('click', function() {
@@ -115,11 +107,11 @@
                 if (data.length > 0) {
                     data.forEach(game => {
                         const gameItem = `
-                        <div class="text-left game-item px-12 cursor-pointer hover:cursor-pointer" data-game-id="${game.name}">
+                        <a href="/game/${game.name}" class="text-left game-item px-12 cursor-pointer hover:opacity-80 transition-opacity">
                             <img alt="${game.name} game cover" class="w-full h-96 object-cover" src="${game.image}" />
                             <div class="mt-2 font-bold">${game.name}</div>
                             <div class="text-gray-400">$${game.price}</div>
-                        </div>`;
+                        </a>`;
                         gameListContainer.insertAdjacentHTML('beforeend', gameItem);
                     });
                 } else {
@@ -158,11 +150,11 @@
             if (data.length > 0) {
                 data.forEach(game => {
                     const gameItem = `
-                    <div class="text-left game-item px-12 cursor-pointer hover:cursor-pointer" data-game-id="${game.name}">
+                    <a href="/game/${game.name}" class="text-left game-item px-12 cursor-pointer hover:opacity-80 transition-opacity">
                         <img alt="${game.name} game cover" class="w-full h-96 object-cover" src="${game.image}" />
                         <div class="mt-2 font-bold">${game.name}</div>
                         <div class="text-gray-400">$${game.price}</div>
-                    </div>`;
+                    </a>`;
                     gameListContainer.insertAdjacentHTML('beforeend', gameItem);
                 });
             } else {

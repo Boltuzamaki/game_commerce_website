@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}
+GAMERCE - Remove Game
+{% endblock %}
+
+{% block content %}
+<div class="flex flex-col md:flex-row min-h-screen">
+    <!-- Sidebar -->
+    <aside class="w-full md:w-64 bg-black p-4 border-r border-gray-800">
+        <nav>
+            <ul class="space-y-4">
+                <li><a href="/dashboard" class="block text-white">Dashboard</a></li>
+                <li><a href="/settings" class="block text-white">Settings</a></li>
+                <li><a href="/user-management" class="block text-white">User Management</a></li>
+                <li><a href="/add-game" class="block text-white">Add new game</a></li>
+                <li><a href="/notifications" class="block text-white">Notification Management</a></li>
+                <li><a href="/remove-game" class="block text-purple-600">Remove game</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-4">
+        <div class="mb-4">
+            <input id="search-input" class="w-full p-2 bg-gray-800 rounded-md text-white" placeholder="Search games to remove..." type="text"/>
+        </div>
+
+        <div id="game-list" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {% for game in get_high_score_games_list %}
+            <div class="game-item bg-gray-800 rounded-lg overflow-hidden">
+                <img alt="{{ game['name'] }} game cover" class="w-full h-48 sm:h-64 object-cover" src="{{ game['image'] }}" />
+                <div class="p-4">
+                    <div class="font-bold text-lg mb-2">{{ game['name'] }}</div>
+                    <div class="text-gray-400 mb-4">${{ game['price'] }}</div>
+                    <button onclick="removeGame('{{ game['name'] }}')" class="w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition-colors">
+                        Remove Game
+                    </button>
+                </div>
+            </div>
+            {% else %}
+            <p class="text-gray-400">No games available.</p>
+            {% endfor %}
+        </div>
+    </main>
+</div>
+
+<script>
+    // Handle search functionality
+    document.getElementById('search-input').addEventListener('keyup', function(e) {
+        // Check if the Enter key was pressed (key code 13)
+        if (e.key === 'Enter' || e.keyCode === 13) {
+            const searchTerm = e.target.value.trim().toLowerCase();
+            const queryParams = new URLSearchParams();
+            if (searchTerm) {
+                queryParams.append("q", searchTerm);
+            }
+            // Reload the page with the new search query
+            window.location.href = "/remove-game?" + queryParams.toString();
+        }
+    });
+    function removeGame(gameName) {
+        if(confirm(`Are you sure you want to remove ${gameName}?`)) {
+            // Add your remove game logic here
+            console.log(`Removing game: ${gameName}`);
+        }
+    }
+</script>
+
+{% endblock %}
